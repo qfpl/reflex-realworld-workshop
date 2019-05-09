@@ -1,0 +1,78 @@
+name: frontend
+version: 0.1
+cabal-version: >= 1.8
+build-type: Simple
+
+library
+  hs-source-dirs: src
+  build-depends: base
+               , common
+               , aeson
+               , containers
+               , dependent-sum
+               , lens
+               , errors
+               , obelisk-frontend
+               , obelisk-route
+               , reflex-dom
+               , obelisk-generated-static
+               , lucid
+               , mmark
+               , text
+               , primitive
+               , ref-tf
+               , reflex
+               , monad-control
+               , dependent-map
+               , dependent-sum-template
+               , transformers
+               , mtl
+               , constraints
+               , jsaddle
+               , ghcjs-dom
+               , jsaddle-dom
+               , data-default
+               , servant
+               , servant-auth
+               , servant-client-core
+               , reflex-dom-storage
+               , servant-reflex
+  exposed-modules:
+      Frontend
+    , Frontend.Article
+    , Frontend.ArticlePreview
+    , Frontend.Conduit.Client
+    , Frontend.Conduit.Client.Internal
+    , Frontend.Editor
+    , Frontend.FrontendStateT
+    , Frontend.Head
+    , Frontend.HomePage
+    , Frontend.LocalStorageKey
+    , Frontend.Login
+    , Frontend.Nav
+    , Frontend.Profile
+    , Frontend.Register
+    , Frontend.Settings
+    , Frontend.Utils
+
+  ghc-options: -Wall 
+  if impl(ghcjs)
+    ghcjs-options:    +RTS -K2048M -RTS -Wall
+
+executable frontend
+  main-is: main.hs
+  hs-source-dirs: src-bin
+  build-depends: base
+               , common
+               , obelisk-frontend
+               , obelisk-route
+               , reflex-dom
+               , obelisk-generated-static
+               , frontend
+  --TODO: Make these ghc-options optional
+  ghc-options: -threaded
+  if os(darwin)
+     ghc-options: -dynamic
+
+  if impl(ghcjs)
+    ghcjs-options:    +RTS -K2048M -RTS -Wall

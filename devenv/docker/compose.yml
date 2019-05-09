@@ -1,0 +1,25 @@
+version: '3'
+services:
+  obWorkshop:
+    image: benkolera/reflex-realworld-workshop:${VERSION}
+    command: ob run
+    volumes:
+      - ${PWD}:/workshop
+    ports:
+     - "8001:8001"
+  obExample:
+    image: benkolera/reflex-realworld-workshop:${VERSION}
+    command: ob run
+    volumes:
+      - ${PWD}/reflex-realworld-example:/workshop
+    ports:
+     - "8000:8000"
+  hoogle:
+    image: benkolera/reflex-realworld-workshop:${VERSION}
+    command: nix-shell -A shells.ghc --run 'hoogle server'
+    volumes:
+      - ${PWD}:/workshop
+    ports:
+     - "8080:8080"
+  pg:
+    image: benkolera/reflex-realworld-workshop-pg:${VERSION}

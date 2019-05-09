@@ -1,0 +1,13 @@
+FROM nixos/nix
+
+COPY devenv/common/nix.conf /etc/nix/nix.conf
+COPY devenv/docker/entrypoint.sh /entrypoint.sh
+
+COPY . /root/prebuild
+WORKDIR /root/prebuild
+
+RUN nix-env -f . -iA obelisk.command
+RUN nix-build . -A shells.ghc
+RUN nix-env -i bash-interactive su-exec
+
+WORKDIR /workshop

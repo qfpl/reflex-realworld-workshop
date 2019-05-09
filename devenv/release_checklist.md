@@ -1,0 +1,24 @@
+# Checklist for new workshop version
+
+- Reflex Realworld Example
+  - Check that reflex-realworld-example db and data.sql aren't out of date.
+    - `pg_dump --data-only -h localhost -U conduit conduit > devenv/common/data.sql`
+  - Check that things build in a nix-shell
+    - `nix-shell --command 'cabal new-build'`
+  - Commit and push example
+- Workshop
+  - Bump submodule in workshop
+  - Generate a new devenv/common/dbdump.sql
+    - `pg_dump --create -h localhost -U conduit conduit > devenv/common/dbdump.sql`
+  - Copy and code diffs across
+  - Repush cachix with devenv/cachix\_push.sh
+  - Rebuild and push docker images with devenv/docker/build.sh (don't run concurrently with vm build)
+  - Rebuild OVA
+    - `devenv/vbox/build.sh`
+    - Import and load up VM. Manual Steps:
+      - Open up spacemacs. Edited haskell, git and vc in and restart.
+      - Add toolbar launchers for emacs and vscode.
+      - Ob run in both workshop and example. Test both
+      - Run the hoogle server and test
+      - Install local file links plugin (this is ok for a dodgy test vm)
+    - `devenv/vbox/export.sh`

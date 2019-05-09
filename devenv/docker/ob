@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -e
+set -x
+cd $(dirname $0)/../../
+if [ ! -e VERSION ]; then
+  echo "Couldn't find version. Dying.!"
+  exit 1;
+fi
+export VERSION=$(cat VERSION)
+export PWD=$(pwd)
+echo -n "postgres://conduit:conduit@pg/conduit" > config/backend/pgConnStr
+echo -n "postgres://conduit:conduit@pg/conduit" > reflex-realworld-example/config/backend/pgConnStr
+
+COMPOSE="docker-compose -f devenv/docker/compose.yml"
+
+case $1 in
+  repl)
+  docker run -ti -v $PWD:/workshop benkolera/reflex-realworld-workshop:$VERSION ob repl;
+  ;;
+  hoogle)
+  shift;
+  # No idea why $@ didn't work here. Must be something about bash that I don't understand
+  docker run -ti -v $PWD:/workshop benkolera/reflex-realworld-workshop:$VERSION nix-shell -A shells.ghc --run "hoogle $1 $2 $3 $4"
+  ;;
+  run-workshop)
+  $COMPOSE up -d pg
+  $COMPOSE up -d hoogle
+  $COMPOSE up obWorkshop
+  ;;
+  run-example)
+  $COMPOSE up -d pg
+  $COMPOSE up -d hoogle
+  $COMPOSE up obExample
+  ;;
+  stop)
+  $COMPOSE down -v --remove-orphans
+  ;;
+  *)
+  echo "Unknown Command. Try repl, hoogle search <symbolName>, run-workshop, run-example, stop"
+  exit 1;
+esac

@@ -1,0 +1,3 @@
+[submodule "reflex-realworld-example"]
+	path = reflex-realworld-example
+	url = https://github.com/qfpl/reflex-realworld-example.git

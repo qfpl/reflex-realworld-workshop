@@ -1,0 +1,5 @@
+FROM postgres:9
+
+ENV POSTGRES_USER conduit
+ENV POSTGRES_PASSWORD conduit
+COPY devenv/common/dbdump.sql /docker-entrypoint-initdb.d/00-dbdump.sql

@@ -1,0 +1,43 @@
+name: common
+version: 0.1
+cabal-version: >= 1.2
+build-type: Simple
+
+library
+  hs-source-dirs: src
+  build-depends: base
+               , obelisk-route
+               , aeson
+               , categories
+               , containers
+               , insert-ordered-containers
+               , lens
+               , mtl
+               , obelisk-executable-config
+               , servant
+               , servant-auth
+               , servant-auth-client
+               , text
+               , time
+
+  exposed-modules:
+    Common.Route
+    Common.Conduit.Api
+    Common.Conduit.Api.Attribute
+    Common.Conduit.Api.Namespace
+    Common.Conduit.Api.Articles
+    Common.Conduit.Api.Articles.Articles
+    Common.Conduit.Api.Articles.Comment
+    Common.Conduit.Api.Articles.Article
+    Common.Conduit.Api.Articles.Attributes
+    Common.Conduit.Api.Articles.CreateComment
+    Common.Conduit.Api.Errors
+    Common.Conduit.Api.Profiles
+    Common.Conduit.Api.Profiles.Profile
+    Common.Conduit.Api.User
+    Common.Conduit.Api.User.Update
+    Common.Conduit.Api.User.Account
+    Common.Conduit.Api.Users
+    Common.Conduit.Api.Users.Credentials
+    Common.Conduit.Api.Users.Registrant
+    Common.Conduit.Api.Validation
