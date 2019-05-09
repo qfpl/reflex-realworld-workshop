@@ -16,9 +16,11 @@
   - Rebuild OVA
     - `devenv/vbox/build.sh`
     - Import and load up VM. Manual Steps:
-      - Open up spacemacs. Edited haskell, git and vc in and restart.
+      - Open up spacemacs. 
       - Add toolbar launchers for emacs and vscode.
+      - Set chromium as default browser
+      - Install local file links chromium plugin (this is ok for a dodgy test vm)
+      - Setup bookmarks for hoogle/workshop/examples
       - Ob run in both workshop and example. Test both
       - Run the hoogle server and test
-      - Install local file links plugin (this is ok for a dodgy test vm)
     - `devenv/vbox/export.sh`

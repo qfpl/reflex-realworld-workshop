@@ -10,7 +10,7 @@ The VM is the easiest option as it has everything pre-installed, running and rea
 
 The docker route should use less resources since it doesn't have to run a whole VM and allows you to use your editor on your machine. The docker way has some mild annoyances (writing files owned by root to the checkout and the haddocks aren't as accessible). The VM is probably the best route unless VBox doesn't work for you.
 
-The Nix/NixOS route is the easiest if you are comfortable with nix, but on MacOS you will have to build a fair amount of haskell source. If you are going down this route on MacOS, please leave it running overnight with plenty of buffer time.
+The Nix/NixOS route is the easiest if you are comfortable with nix. It has been mostly tested on Linux, but obelisk is supported on MacOS and at least one person has successfully built the workshop on MacOS. So it should be fine.
 
 The VM and the Docker image is around 3GiB to download. With nix, it's about 700MiB of dependencies to download from the caches.
 
@@ -24,7 +24,9 @@ Download the OVA from running:
 
 If you don't have curl, just hit https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/OVA_LATEST_VERSION in a browser and take that number and download https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$VERSION.ova.
 
-Boot that VM up. Open up three terminals.
+Import that appliance by opening up the virtual box gui > File > Import Appliance > select file. The defaults should be fine.
+
+Boot that VM up. Once it is up, open up three terminals.
 
   - `cd reflex-realworld-workshop` then `ob run`
   - `cd reflex-realworld-workshop/reflex-workshop-example` then `ob run`
@@ -76,7 +78,7 @@ If you don't have docker and would rather set things up in postgres yourself wha
 
 ### Run the workshop
 
-Everything should be cached on qfpl.cachix.org. If you've setup the caches it should just be some downloading (of about 750MiB) rather than building a lot of code from source.
+Everything should be cached on qfpl.cachix.org. If you've setup the caches it should just be some downloading (of about 750MiB) rather than building a lot of code from source. Chris McKay has built it on MacOS nix and it worked fine and should now be cached thanks to him too. :)
 
 Run `ob run` in: `~/reflex-realworld-workshop/reflex-realworld-example` and then check out http://localhost:8000 . You should see a page with some articles and ponies on it. If this works, the DB is all setup and the code is built.
 

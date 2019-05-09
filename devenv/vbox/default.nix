@@ -19,15 +19,8 @@ let
   nixpkgs = project.reflex.nixpkgs;
   pkgs = nixpkgs.pkgs;
 
-  reflex-realworld-workshop = pkgs.stdenv.mkDerivation {
-    name = "reflex-realworld-workshop-source";
-    src = ../../.;
-    phases = ["installPhase"];
-    installPhase = ''
-      mkdir $out
-      cp -r $src $out/
-    '';
-  };
+  reflex-realworld-workshop = ../../.;
+
   vsCodeCustom = pkgs.vscode-with-extensions.override {
     vscodeExtensions = pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       {
@@ -41,6 +34,12 @@ let
   emacsCustom = pkgs.emacsWithPackages (epkgs: with epkgs.melpaPackages;
     [haskell-mode]
   );
+  spacemacs = pkgs.fetchFromGitHub {
+    owner = "syl20bnr";
+    repo = "spacemacs";
+    rev = "c7a103a772d808101d7635ec10f292ab9202d9ee";
+    sha256 = "0g3v64szfvyawcgg9iwkrpkl38caifq35mabchamv44nng4b2bb6";
+  };
   projectGhc = project.ghc.ghcWithPackages (hpkgs: [
       hpkgs.backend
       hpkgs.frontend
@@ -66,7 +65,6 @@ let
     gnome3.gedit
     vsCodeCustom
 
-    reflex-realworld-workshop
     obelisk-src
     reflex-platform-src
     nixpkgs-src
@@ -138,16 +136,15 @@ let
         wantedBy = [ "multi-user.target" ];
         script = ''
           if [ ! -e /home/workshop/.emacs.d ]; then
-            git clone https://github.com/syl20bnr/spacemacs /home/workshop/.emacs.d
+            cp -r ${spacemacs} /home/workshop/.emacs.d
             cp ${spacemacs-config} /home/workshop/.spacemacs
-            chown workshop /home/workshop/.spacemacs 
-            chown -R workshop /home/workshop/.emacs.d
-            chmod -R u+w /home/workshop/.emacs.d
+            chmod 700 /home/workshop/.spacemacs /home/workshop/.emacs.d
+            chown -R workshop /home/workshop/.spacemacs /home/workshop/.emacs.d
           fi
           if [ ! -e /home/workshop/reflex-realworld-workshop ]; then
-            cp -r "${reflex-realworld-workshop}"/* /home/workshop/reflex-realworld-workshop
+            cp -r ${reflex-realworld-workshop} /home/workshop/reflex-realworld-workshop
+            chmod -R 700 /home/workshop/reflex-realworld-workshop
             chown -R workshop /home/workshop/reflex-realworld-workshop
-            chmod -R u+w /home/workshop/reflex-realworld-workshop
           fi
         '';
       };

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+set -x
+
+cd $(dirname $0)/../..
+if [ ! -e VERSION ]; then
+  echo "Couldn't find version. Dying.!"
+  exit 1;
+fi
+VERSION=$(cat VERSION)
+
+nix-shell -A shells.ghc --run "hoogle server"
