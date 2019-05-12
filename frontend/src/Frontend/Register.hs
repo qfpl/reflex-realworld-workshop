@@ -9,7 +9,6 @@ import Reflex.Dom.Core
 import           Data.List.NonEmpty     (NonEmpty)
 import qualified Data.Map               as Map
 import           Obelisk.Route.Frontend (pattern (:/), R, RouteToUrl, SetRoute, routeLink)
-import           Servant.Common.Req     (reqSuccess)
 
 import           Common.Conduit.Api.Namespace        (Namespace (Namespace), unNamespace)
 import           Common.Conduit.Api.Users.Registrant (Registrant (Registrant))

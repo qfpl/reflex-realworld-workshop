@@ -5,9 +5,6 @@
 -- Dumped from database version 9.6.12
 -- Dumped by pg_dump version 9.6.12
 
-
-\connect conduit
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -222,6 +219,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.article_tags (article__id, tag__name) FROM stdin;
+3	parties
+4	being cool
 \.
 
 
@@ -247,6 +246,8 @@ SELECT pg_catalog.setval('public.articles_id_seq', 4, true);
 --
 
 COPY public.comments (id, body, author__id, article__id, created_at, updated_at) FROM stdin;
+4	This article is still not finished. Please remember to finish it off soon. :)	6	4	2019-05-12 15:25:21.996366+00	2019-05-12 15:25:21.996366+00
+5	Oh yeah... Will do, thanks! 	5	4	2019-05-12 15:26:17.483094+00	2019-05-12 15:26:17.483094+00
 \.
 
 
@@ -254,7 +255,7 @@ COPY public.comments (id, body, author__id, article__id, created_at, updated_at)
 -- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: conduit
 --
 
-SELECT pg_catalog.setval('public.comments_id_seq', 2, true);
+SELECT pg_catalog.setval('public.comments_id_seq', 5, true);
 
 
 --
@@ -270,6 +271,9 @@ COPY public.favorites (user__id, article__id) FROM stdin;
 --
 
 COPY public.follows (follower__id, followee__id) FROM stdin;
+5	6
+6	5
+5	7
 \.
 
 
@@ -278,9 +282,8 @@ COPY public.follows (follower__id, followee__id) FROM stdin;
 --
 
 COPY public.tags (name) FROM stdin;
-angularjs
-dragons
-reactjs
+parties
+being cool
 \.
 
 
@@ -290,8 +293,8 @@ reactjs
 
 COPY public.users (id, password, email, username, bio, image) FROM stdin;
 5	14|8|1|9eJWoRDVyc5sKteli5y+LE0aFO4g1LhgD1ol3Yy2Tvg=|Uq8llEuBLZtdQ5pvPidP4VkeGpd1CqdeEJ+NFOcVRfeFYaDbftDxhY5sX05zdHc2nzoalzsjKgzdeFmcVcTSzw==	dashy@mlp	Dashy	Ponyville weather control expert & Trainee Wonderbolt!	/static/avatars/dashy.png
-6	14|8|1|LNncVRkToJiBiULw9y8m3NQjWIdnExcTNCO+E1aYqLg=|PjTUfPPfNZVFD/p2tlT8c7kzTGI0SWT86v51CDmEUEi2ylg5llYGDXhCbjtebMR+GlaVSUgIThJYWyCUJQjbdw==	fluttershy@mlp	Fluttershy		/static/avatars/fluttershy.png
 7	14|8|1|uyRA6mhsCBcVPywd8F1Jsqe8BE4bVgIthD5NwLhXCgw=|7+5+h+9OKFb68D1zvmnUkmQ0q7liuLwfKz1TCH07DBe7BH7Za9wQ65iSs8Peedfi0i6PgWrXAtqrCsnON83+zQ==	pinkiepie@mlp	PinkiePie	Loves to throw parties!	/static/avatars/pinkie.png
+6	14|8|1|9eJWoRDVyc5sKteli5y+LE0aFO4g1LhgD1ol3Yy2Tvg=|Uq8llEuBLZtdQ5pvPidP4VkeGpd1CqdeEJ+NFOcVRfeFYaDbftDxhY5sX05zdHc2nzoalzsjKgzdeFmcVcTSzw==	fluttershy@mlp	Fluttershy		/static/avatars/fluttershy.png
 \.
 
 

@@ -9,7 +9,7 @@ import Control.Monad.Fix      (MonadFix)
 import Data.Bool              (bool)
 import Data.Functor           (void)
 import Obelisk.Route.Frontend (pattern (:/), R, RouteToUrl, RoutedT, SetRoute, askRoute)
-import Servant.Common.Req     (QParam (QNone), reqSuccess)
+import Servant.Common.Req     (QParam (QNone))
 
 import           Common.Conduit.Api.Articles.Articles (Articles (..))
 import           Common.Conduit.Api.Namespace         (unNamespace)

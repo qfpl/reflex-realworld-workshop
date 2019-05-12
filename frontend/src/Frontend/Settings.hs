@@ -13,7 +13,6 @@ import qualified Data.Map               as Map
 import           Data.Maybe             (fromMaybe)
 import qualified Data.Text              as Text
 import           Obelisk.Route.Frontend (pattern (:/), R, SetRoute, setRoute)
-import           Servant.Common.Req     (reqSuccess)
 
 import           Common.Conduit.Api.Namespace    (Namespace (Namespace), unNamespace)
 import qualified Common.Conduit.Api.User.Account as Account

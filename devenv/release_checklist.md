@@ -9,7 +9,7 @@
 - Workshop
   - Bump submodule in workshop
   - Generate a new devenv/common/dbdump.sql
-    - `pg_dump --create -h localhost -U conduit conduit > devenv/common/dbdump.sql`
+    - `pg_dump -h localhost -U conduit conduit > devenv/common/dbdump.sql`
   - Copy and code diffs across
   - Repush cachix with devenv/cachix\_push.sh
   - Rebuild and push docker images with devenv/docker/build.sh (don't run concurrently with vm build)

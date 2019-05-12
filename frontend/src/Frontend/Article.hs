@@ -21,7 +21,6 @@ import           GHCJS.DOM.Element      (setInnerHTML)
 import           GHCJS.DOM.Types        (liftJSM)
 import qualified Lucid                  as L
 import           Obelisk.Route.Frontend (pattern (:/), R, RouteToUrl, Routed, SetRoute, askRoute, routeLink)
-import           Servant.Common.Req     (reqSuccess)
 import qualified Text.MMark             as MMark
 
 

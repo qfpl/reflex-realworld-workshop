@@ -91,24 +91,38 @@ data ArticlesClient f t m = ArticlesClient
     -> Dynamic t (f (Either Text (Namespace "article" CreateArticle)))
     -> Event t ()
     -> m (Event t (f (ReqResult () (Namespace "article" Article))))
+  , _articlesFeed
+    :: Dynamic t (f (Maybe Token))
+    -> Dynamic t (f (QParam Integer))
+    -> Dynamic t (f (QParam Integer))
+    -> Event t ()
+    -> m (Event t (f (ReqResult () Articles)))
   , _articlesArticle :: Dynamic t (f (Maybe Token)) -> f (Dynamic t (Either Text Text)) -> ArticleClient f t m
   }
 makeLenses ''ArticlesClient
 
-data ProfileClient f t m = ProfileClient
+data ProfilesClient f t m = ProfilesClient
   { _profileGet
     :: Dynamic t (f (Maybe Token))
     -> (f (Dynamic t (Either Text Text)))
     -> Event t ()
     -> m (Event t (f (ReqResult () (Namespace "profile" Profile))))
   }
-makeLenses ''ProfileClient
+makeLenses ''ProfilesClient
+
+data TagsClient f t m = TagsClient
+  { _tagsAll
+    :: Event t ()
+    -> m (Event t (f (ReqResult () (Namespace "tags" [Text]))))
+  }
+makeLenses ''TagsClient
 
 data ApiClient f t m = ApiClient
   { _apiUsers    :: UsersClient f t m
   , _apiUser     :: UserClient f t m
   , _apiArticles :: ArticlesClient f t m
-  , _apiProfile  :: ProfileClient f t m
+  , _apiProfiles :: ProfilesClient f t m
+  , _apiTags     :: TagsClient f t m
   }
 makeLenses ''ApiClient
 
@@ -122,7 +136,7 @@ getClient = mkClient (pure $ BasePath "/") -- This would be much better if there
       where
         c :: ClientMulti t m (Api Token) f ()
         c = clientA (Proxy :: Proxy (Api Token))  (Proxy :: Proxy m) (Proxy :: Proxy f) (Proxy :: Proxy ()) bp
-        apiUsersC :<|> apiUserC :<|> apiArticlesC :<|> apiProfileC = c
+        apiUsersC :<|> apiUserC :<|> apiArticlesC :<|> apiProfilesC :<|> apiTagsC = c
         _apiUsers = UsersClient { .. }
           where
             _usersLogin :<|> _usersRegister = apiUsersC
@@ -131,13 +145,16 @@ getClient = mkClient (pure $ BasePath "/") -- This would be much better if there
             _userCurrent :<|> _userUpdate = apiUserC
         _apiArticles = ArticlesClient { .. }
           where
-            _articlesList :<|> _articlesCreate :<|> articleC = apiArticlesC
+            _articlesList :<|> _articlesCreate :<|> _articlesFeed :<|> articleC = apiArticlesC
             _articlesArticle auth slug = ArticleClient { .. }
               where
                 _articleGet  :<|> _articleComments :<|> _articleCommentCreate :<|> _articleCommentDelete = articleC auth slug
-        _apiProfile = ProfileClient { .. }
+        _apiProfiles = ProfilesClient { .. }
           where
-            _profileGet = apiProfileC
+            _profileGet = apiProfilesC
+        _apiTags = TagsClient { .. }
+          where
+            _tagsAll = apiTagsC
 
 -- TODO : Make this not dodgy and put it in servant-reflex.
 -- It's dumb, because servant-reflex has an instance for the normal client that ignores any auth tokens.

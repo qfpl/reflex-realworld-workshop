@@ -9,7 +9,6 @@ import Reflex.Dom.Core
 import qualified Data.Map               as Map
 import qualified Data.Set               as Set
 import           Obelisk.Route.Frontend (pattern (:/), R, SetRoute, setRoute)
-import           Servant.Common.Req     (reqSuccess)
 
 import qualified Common.Conduit.Api.Articles.Article    as Article
 import           Common.Conduit.Api.Articles.Attributes (ArticleAttributes (..), CreateArticle)

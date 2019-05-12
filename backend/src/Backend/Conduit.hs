@@ -66,7 +66,7 @@ mkEnv dbConnStr jwk = do
   pure $ ConduitServerEnv p (defaultJWTSettings jwk)
 
 server :: Server (Api Claim) ConduitServerContext ConduitServerM
-server = usersServer :<|> userServer :<|> articlesServer :<|> profileServer
+server = usersServer :<|> userServer :<|> articlesServer :<|> profileServer :<|> tagsServer
 
 usersServer :: Server (UsersApi Claim) ConduitServerContext ConduitServerM
 usersServer = loginServer :<|> registerServer
@@ -98,7 +98,7 @@ userServer = currentUserServer :<|> updateUserServer
       userToAccount newUser
 
 articlesServer :: Server (ArticlesApi Claim) ConduitServerContext ConduitServerM
-articlesServer = listArticlesServer :<|> createArticleServer :<|> articleServer
+articlesServer = listArticlesServer :<|> createArticleServer :<|> feedServer :<|> articleServer
   where
     listArticlesServer authRes limit offset tags authors favorited = runConduitErrorsT $ do
       runDatabase $ do
@@ -111,6 +111,15 @@ articlesServer = listArticlesServer :<|> createArticleServer :<|> articleServer
            (Set.fromList authors)
            (Set.fromList tags)
            (Set.fromList favorited))
+
+    feedServer authRes limit offset = runConduitErrorsT $ do
+      runDatabase $ do
+        currUser <- loadAuthorizedUser authRes
+        ApiArticles.fromList <$>
+          (DBArticles.feed
+           (primaryKey currUser)
+           (fromMaybe 20 limit)
+           (fromMaybe 0 offset))
 
     createArticleServer authRes (Namespace attrCreate) = runConduitErrorsT $ do
       runDatabase $ do
@@ -133,9 +142,9 @@ articlesServer = listArticlesServer :<|> createArticleServer :<|> articleServer
 
         listCommentsServer = runConduitErrorsT $ do
           runDatabase $ do
-            currUser    <- loadAuthorizedUser authRes
+            currUser    <- optionallyLoadAuthorizedUser authRes
             _           <- loadArticle
-            Namespace <$> DBComments.forArticle (Just $ primaryKey currUser) slug
+            Namespace <$> DBComments.forArticle (primaryKey <$> currUser) slug
 
 
         createCommentServer (Namespace cc) = runConduitErrorsT $ do
@@ -166,6 +175,11 @@ profileServer = profileGetServer
         currUserMay <- optionallyLoadAuthorizedUser authRes
         profileMay  <- liftQuery $ DBUsers.findProfile (primaryKey <$> currUserMay) username
         Namespace <$> (profileMay ?? (notFound ("Profile(" <> username <> ")")))
+
+tagsServer :: Server (TagsApi Claim) ConduitServerContext ConduitServerM
+tagsServer = tagsAllServer
+  where
+    tagsAllServer = runConduitErrorsT . runDatabase . liftQuery $ Namespace . fmap DBTags.name <$> DBTags.query
 
 -- Helper Functions TODO Move to Internal Module -------------------------------------------------------------
 
