@@ -71,6 +71,10 @@ Checkout this code if you haven't already:
 
 You will need [docker compose](https://docs.docker.com/compose/install/) installed.
 
+### Install Chromium (Internet Required)
+
+The jsaddle development environment only works in chromium, so if you use firefox or safari only please install chrom before the workshop!
+
 ### Download Layers & Test (Internet Required)
 
 Run this command: `devenv/docker/ob run-example` and load up http://localhost:8000 . If you see a page loaded with some articles, everything is all good.
@@ -100,6 +104,10 @@ See [nix.conf](devenv/common/nix.conf) for a nix example or see a [NixOS](devenv
 ### Install Obelisk (Internet Required)
 
 Follow the [obelisk installation instructions](https://github.com/obsidiansystems/obelisk/#installing-obelisk) ignoring the cache part because you already set that up in the last step.
+
+### Install Chromium (Internet Required)
+
+The jsaddle development environment only works in chromium, so if you use firefox or safari only please install chrom before the workshop!
 
 ### Setup the database (Internet Required)
 
