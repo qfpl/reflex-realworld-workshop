@@ -14,6 +14,10 @@ The Nix/NixOS route is the easiest if you are comfortable with nix. It has been 
 
 The VM and the Docker image is around 3GiB to download. With nix, it's about 700MiB of dependencies to download from the caches.
 
+In all cases, the end result of this process should look like this, with the skeleton workshop code running of http://localhost:8001 and the example code running on port 8000 and showing test data that involves ponies. :)
+
+![Expected setup](expected_setup.png)
+
 If any of these steps don't work for you, please either file a github issue, [![Chat on Gitter](https://badges.gitter.im/reflex-realworld-workshop/community.svg)](https://gitter.im/reflex-realworld-workshop/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or jump onto #qfpl on irc.freenode.net.
 
 
@@ -27,7 +31,10 @@ Download the OVA from running:
 
 `curl https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$(curl https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/OVA_LATEST_VERSION).ova > workshop.ova`.
 
-If you don't have curl, just hit https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/OVA_LATEST_VERSION in a browser and take that number and download https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$VERSION.ova.
+Be careful about your shell being friendly and escaping the parens when you paste!
+
+If you don't have curl, just hit [the OVA\_LATEST
+\_VERSION\_FILE](https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/OVA_LATEST_VERSION) in a browser and take that number and download the appropriate version with this link: https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$VERSION.ova.
 
 ### Import Appliance
 
@@ -47,7 +54,7 @@ You should be able to open three tabs up:
   - http://localhost:8001 - Workshop code
   - http://localhost:8080 - Local Hoogle Server
 
-Once you have this setup, you should just be able to `git pull && git submodule update` and rerun both ob runs on the night before lamdbajam. This will ensure you have the latest code and there should be no huge redownloads or needing to
+Once you have this setup, you should just be able to `git pull` and rerun both ob runs on the night before lamdbajam. This will ensure you have the latest code and there should be no huge redownloads or needing to
 download the whole image again.
 
 Please watch the repo for releases and/or join gitter to keep in touch or ask questions! :)
@@ -116,6 +123,6 @@ If this is all happy you are good to go! You may need to git pull before the wor
 
 ### Getting help / keeping up to date
 
-Once you have this setup, you should just be able to `git pull && git submodule update` and rerun both ob runs on the night before lamdbajam.
+Once you have this setup, you should just be able to `git pull` and rerun both ob runs on the night before lamdbajam.
 
 Please watch the repo for releases and/or join gitter to keep in touch or ask questions! :)

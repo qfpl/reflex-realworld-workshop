@@ -8,7 +8,7 @@ if [ ! -e VERSION ]; then
   exit 1;
 fi
 VERSION=$(cat VERSION)
-RELEASE=1
+RELEASE=2
 
 OUT_DIR=~/.cache/reflex-realworld-workshop/
 mkdir -p $OUT_DIR
