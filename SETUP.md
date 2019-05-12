@@ -16,6 +16,8 @@ The VM and the Docker image is around 3GiB to download. With nix, it's about 700
 
 In all cases, the end result of this process should look like this, with the skeleton workshop code running of http://localhost:8001 and the example code running on port 8000 and showing test data that involves ponies. :)
 
+Note that the example project is included in the workshop as a submodule, so if you checkout code, you only need to check out https://github.com/qfpl/reflex-realworld-workshop yourself! It's included as a submodule so that we can always keep the workshop and the examples pinned together so you don't accidentally have a newer/older example that could be confusing.
+
 ![Expected setup](expected_setup.png)
 
 If any of these steps don't work for you, please either file a github issue, [![Chat on Gitter](https://badges.gitter.im/reflex-realworld-workshop/community.svg)](https://gitter.im/reflex-realworld-workshop/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or jump onto #qfpl on irc.freenode.net.
