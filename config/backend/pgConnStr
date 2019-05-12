@@ -1,1 +1,1 @@
-postgres://conduit:conduit@pg/conduit
+postgres://conduit:conduit@localhost/conduit
