@@ -47,7 +47,7 @@ You should have followed the instructions in the  [Setup Page](../SETUP.md). Thi
 - 20 Minutes : [Home page exercise](./04.home.md) where we learn how to deal with displaying lists and using eventwriter.
 - 20 Minutes : [Article Exercise](./05.article.md) where we do some higher order FRP and get into some interesting state management.
 - 5 Minutes : Wrap up and questions
-- Later: [Bonus Exercises](./??-bonus.md) if you want to dig further after the workshop.
+- Later: [Bonus Exercises](./9001-bonus.md) if you want to dig further after the workshop.
 
 ## Next Page
 
