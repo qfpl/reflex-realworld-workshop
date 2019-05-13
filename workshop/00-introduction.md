@@ -45,7 +45,7 @@ You should have followed the instructions in the  [Setup Page](../SETUP.md). Thi
 - 10 Mins: [Login Form Exercise](./02-login.md) where we learn the basics of submitting a form via our client.
 - 15 Mins: [Settings Form Exercise](./03-settings.md) where we have a form that requires data to be loaded first.
 - 20 Minutes : [Home page exercise](./04.home.md) where we learn how to deal with displaying lists and using eventwriter.
-- 20 Minutes : [Article Exercise](./05.article.md) where we do some higher order FRP and get into some interesting state management.
+- 20 Minutes : [Article Exercise](./05-article.md) where we do some higher order FRP and get into some interesting state management.
 - 5 Minutes : Wrap up and questions
 - Later: [Bonus Exercises](./9001-bonus.md) if you want to dig further after the workshop.
 
