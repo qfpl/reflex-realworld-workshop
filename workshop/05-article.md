@@ -147,4 +147,4 @@ I recommend that you take the following path:
 
 ## Next Page
 
-Well done, you finished the workshop! If you are keen for more, catch the ideas in [??-bonus](??-bonus.md)
+Well done, you finished the workshop! If you are keen for more, catch the ideas in [??-bonus](./??-bonus.md)

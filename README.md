@@ -22,7 +22,7 @@ See [SETUP.md](./SETUP.md).
 
 ## Workshop
 
-Coming Soon! :)
+See [workshop/00-introduction](workshop/00-introduction.md)
 
 ## Acknowledgements & Thanks
 
