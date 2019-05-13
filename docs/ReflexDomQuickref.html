@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Workshop Docs</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="./github-pandoc.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="reflex-dom-quickish-reference">Reflex-Dom Quick(ish) Reference</h1>
+<h2 id="typeclasses">Typeclasses</h2>
+<p>Function signatures have been simplified. The 't' type parameter and many typeclass constraints are removed, and annotations are added regarding the monad of the result type (See the Reflex Quickstart for more discussion). Annotations:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1">[ ]   <span class="co">-- Pure function</span></a>
+<a class="sourceLine" id="cb1-2" title="2">[<span class="dt">W</span>]   <span class="co">-- Function runs in any monad supporting MonadWidget</span></a>
+<a class="sourceLine" id="cb1-3" title="3">[<span class="dt">I</span>]   <span class="co">-- Function runs in IO</span></a></code></pre></div>
+<p>Functions from Reflex that run in MonadSample or MonadHold context ([S] or [H]) will also run in [W].</p>
+<h2 id="creating-widgets-dom-elements-hooked-into-the-frp-system">Creating widgets (DOM elements hooked into the FRP system)</h2>
+<h3 id="basic-widgets">Basic widgets</h3>
+<p>These functions generally take an element tag (such as "div", "h1", etc) and a child widget, and produce a widget of the given type containing the child. Some of these functions return data of type <code>El</code>, which is a handle to the created DOM element along with a set of potential Events that might occur on that element.</p>
+<p>Widgets may return any type (this is 'a' in many of the functions below). Often this will be an Event carrying user interactions with the widget.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="co">-- Simplest form.  Create a widget of given type containing the given child.</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="co">-- Return whatever the child returns.</span></a>
+<a class="sourceLine" id="cb2-3" title="3">[<span class="dt">W</span>]<span class="ot">   el         ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>                                  m a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co">-- This version returns the &#39;El&#39; as well.</span></a>
+<a class="sourceLine" id="cb2-6" title="6">[<span class="dt">W</span>]<span class="ot">   el&#39;        ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>                                  m a <span class="ot">-&gt;</span> m (<span class="dt">El</span>, a)</a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co">-- These two additionally apply attributes to the element, such as (&quot;class&quot; =: &quot;blah&quot;). (=:) is &#39;Map.singleton&#39;</span></a>
+<a class="sourceLine" id="cb2-9" title="9">[<span class="dt">W</span>]<span class="ot">   elAttr     ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>            <span class="dt">Map</span> <span class="dt">Text</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>      m a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb2-10" title="10">[<span class="dt">W</span>]<span class="ot">   elAttr&#39;    ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>            <span class="dt">Map</span> <span class="dt">Text</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>      m a <span class="ot">-&gt;</span> m (<span class="dt">El</span>, a)</a>
+<a class="sourceLine" id="cb2-11" title="11"></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="co">-- As above, but now the attribute map is Dynamic</span></a>
+<a class="sourceLine" id="cb2-13" title="13">[<span class="dt">W</span>]<span class="ot">   elDynAttr  ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>   <span class="dt">Dynamic</span> (<span class="dt">Map</span> <span class="dt">Text</span> <span class="dt">Text</span>) <span class="ot">-&gt;</span>     m a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb2-14" title="14">[<span class="dt">W</span>]<span class="ot">   elDynAttr&#39; ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>   <span class="dt">Dynamic</span> (<span class="dt">Map</span> <span class="dt">Text</span> <span class="dt">Text</span>) <span class="ot">-&gt;</span>     m a <span class="ot">-&gt;</span> m (<span class="dt">El</span>, a)</a>
+<a class="sourceLine" id="cb2-15" title="15"></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="co">-- As above, but with an optional XML namespace for the tag.  Note that this does *not* set the &#39;xmlns&#39; attribute.  See https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-DocCrElNS</span></a>
+<a class="sourceLine" id="cb2-17" title="17">[<span class="dt">W</span>]<span class="ot">   elDynAttrNS&#39; ::</span> <span class="dt">Maybe</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> (<span class="dt">Map</span> <span class="dt">Text</span> <span class="dt">Text</span>) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m (<span class="dt">El</span>, a)</a>
+<a class="sourceLine" id="cb2-18" title="18"></a>
+<a class="sourceLine" id="cb2-19" title="19"><span class="co">-- Shortcut for elAttr when you only want to set the &quot;class&quot; attribute.</span></a>
+<a class="sourceLine" id="cb2-20" title="20">[<span class="dt">W</span>]<span class="ot">   elClass    ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>                       <span class="dt">Text</span> <span class="ot">-&gt;</span>    m a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb2-21" title="21"></a>
+<a class="sourceLine" id="cb2-22" title="22"><span class="co">-- Even shorter-cut for above when element type is &quot;div&quot;.  Create a div of given class.</span></a>
+<a class="sourceLine" id="cb2-23" title="23">[<span class="dt">W</span>]<span class="ot">   divClass   ::</span>                               <span class="dt">Text</span> <span class="ot">-&gt;</span>    m a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb2-24" title="24"></a>
+<a class="sourceLine" id="cb2-25" title="25"><span class="co">-- Create a widget of given type with arbitrary, Dynamic HTML inside.</span></a>
+<a class="sourceLine" id="cb2-26" title="26">[<span class="dt">W</span>]<span class="ot">   elDynHtml&#39;     ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>                        <span class="dt">Dynamic</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>   m <span class="dt">El</span></a>
+<a class="sourceLine" id="cb2-27" title="27">[<span class="dt">W</span>]<span class="ot">   elDynHtmlAttr&#39; ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>   <span class="dt">Map</span> <span class="dt">Text</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>     <span class="dt">Dynamic</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>   m <span class="dt">El</span></a>
+<a class="sourceLine" id="cb2-28" title="28"></a>
+<a class="sourceLine" id="cb2-29" title="29"><span class="co">-- Create a static text element</span></a>
+<a class="sourceLine" id="cb2-30" title="30">[<span class="dt">W</span>]<span class="ot">   text    ::</span>              <span class="dt">Text</span> <span class="ot">-&gt;</span>   m ()</a>
+<a class="sourceLine" id="cb2-31" title="31"></a>
+<a class="sourceLine" id="cb2-32" title="32"><span class="co">-- Create a dynamic text element</span></a>
+<a class="sourceLine" id="cb2-33" title="33">[<span class="dt">W</span>]<span class="ot">   dynText ::</span>      <span class="dt">Dynamic</span> <span class="dt">Text</span> <span class="ot">-&gt;</span>   m ()</a>
+<a class="sourceLine" id="cb2-34" title="34">[<span class="dt">W</span>]<span class="ot">   display ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Dynamic</span> a <span class="ot">-&gt;</span> m ()</a>
+<a class="sourceLine" id="cb2-35" title="35"></a>
+<a class="sourceLine" id="cb2-36" title="36"><span class="co">-- Create a &quot;button&quot; element with given label, return onClick Event</span></a>
+<a class="sourceLine" id="cb2-37" title="37">[<span class="dt">W</span>]<span class="ot">   button ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Event</span> ())</a>
+<a class="sourceLine" id="cb2-38" title="38"></a>
+<a class="sourceLine" id="cb2-39" title="39"><span class="co">-- Empty widget</span></a>
+<a class="sourceLine" id="cb2-40" title="40">[<span class="dt">W</span>]<span class="ot">   blank ::</span> m ()</a></code></pre></div>
+<h3 id="dynamic-widgets">Dynamic widgets</h3>
+<p>In the Dynamic cases so far, the <em>content</em> of a widget is dynamic but the <em>definition</em> of the widget is static. The functions below enable the definition and/or structure of the widget itself to change over time.</p>
+<p>Note the "list" functions do not imply particular HTML tags (ul, li, etc), though the widgets they create can have those tags if you construct them appropriately.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="co">-- Create a dynamically-redefined widget from a Dynamic of widget actions.</span></a>
+<a class="sourceLine" id="cb3-2" title="2">[<span class="dt">W</span>]<span class="ot">   dyn        ::</span>        <span class="dt">Dynamic</span> (m a) <span class="ot">-&gt;</span> m (<span class="dt">Event</span> a)</a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">-- Same as dyn, but takes initial value and an update Event instead of a Dynamic.</span></a>
+<a class="sourceLine" id="cb3-5" title="5">[<span class="dt">W</span>]<span class="ot">   widgetHold ::</span> m a <span class="ot">-&gt;</span>   <span class="dt">Event</span> (m a) <span class="ot">-&gt;</span> m (<span class="dt">Dynamic</span> a)</a></code></pre></div>
+<p>Also see the "Collection management functions" section in the <code>reflex</code> Quick Reference.</p>
+<h3 id="utility-widgets">Utility widgets</h3>
+<p>These are useful widgets that are implemented (or could be implemented) in terms of the low-level widgets above.</p>
+<p>Some of these widget builders take a configuration record and return a record containing Events or other useful data associated with the created widget (similar to 'El'). The configuration records have default values, so you can just supply 'def'. See Reflex/Dom/Widget/Input.hs for record fields (Lenses are provided).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="co">-- Text input.</span></a>
+<a class="sourceLine" id="cb4-2" title="2">[<span class="dt">W</span>]<span class="ot">   textInput ::</span> <span class="dt">TextInputConfig</span> <span class="ot">-&gt;</span> m <span class="dt">TextInput</span></a>
+<a class="sourceLine" id="cb4-3" title="3">[ ]<span class="ot">   textInputGetEnter ::</span> <span class="dt">TextInput</span> <span class="ot">-&gt;</span> <span class="dt">Event</span> ()</a>
+<a class="sourceLine" id="cb4-4" title="4">[<span class="dt">W</span>]<span class="ot">   textArea ::</span> <span class="dt">TextAreaConfig</span> <span class="ot">-&gt;</span> m <span class="dt">TextArea</span></a>
+<a class="sourceLine" id="cb4-5" title="5"></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="co">-- Range input (slider with float values).</span></a>
+<a class="sourceLine" id="cb4-7" title="7">[<span class="dt">W</span>]<span class="ot">   rangeInput ::</span> <span class="dt">RangeInputConfig</span> <span class="ot">-&gt;</span> m <span class="dt">RangeInput</span></a>
+<a class="sourceLine" id="cb4-8" title="8"></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="co">-- Checkbox.  The Bool supplies the initial state.</span></a>
+<a class="sourceLine" id="cb4-10" title="10">[<span class="dt">W</span>]<span class="ot">   checkbox ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">CheckboxConfig</span> <span class="ot">-&gt;</span> m <span class="dt">Checkbox</span></a>
+<a class="sourceLine" id="cb4-11" title="11"></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="co">-- Dropdown with Dynamic options.  First argument is initial state.</span></a>
+<a class="sourceLine" id="cb4-13" title="13">[<span class="dt">W</span>]<span class="ot">   dropdown ::</span> (<span class="dt">Ord</span> k, <span class="dt">Show</span> k, <span class="dt">Read</span> k) <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb4-14" title="14">          k <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> (<span class="dt">Map</span> k <span class="dt">Text</span>) <span class="ot">-&gt;</span> <span class="dt">DropdownConfig</span> k <span class="ot">-&gt;</span> m (<span class="dt">Dropdown</span> k)</a>
+<a class="sourceLine" id="cb4-15" title="15"></a>
+<a class="sourceLine" id="cb4-16" title="16"><span class="co">-- Table with static columns and dynamic rows.</span></a>
+<a class="sourceLine" id="cb4-17" title="17">[<span class="dt">W</span>]<span class="ot">   tableDynAttr ::</span> <span class="op">...</span>        <span class="co">-- See Reflex.Dom.Widget.Basic</span></a>
+<a class="sourceLine" id="cb4-18" title="18"></a>
+<a class="sourceLine" id="cb4-19" title="19"><span class="co">-- Tabbed view that shows only one of its child widgets at a time.</span></a>
+<a class="sourceLine" id="cb4-20" title="20">[<span class="dt">W</span>]<span class="ot">   tabDisplay ::</span> (<span class="dt">Show</span> k, <span class="dt">Ord</span> k) <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Map</span> k (<span class="dt">Text</span>, m ()) <span class="ot">-&gt;</span> m ()</a>
+<a class="sourceLine" id="cb4-21" title="21"></a>
+<a class="sourceLine" id="cb4-22" title="22"><span class="co">-- Widget to efficiently display long scrolling lists.</span></a>
+<a class="sourceLine" id="cb4-23" title="23">[<span class="dt">W</span>]<span class="ot">   virtualListWithSelection ::</span> <span class="op">...</span>        <span class="co">-- See Reflex.Dom.Widget.Lazy</span></a></code></pre></div>
+<h2 id="connecting-to-the-real-world-io">Connecting to the real world (I/O)</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="co">-- Extract the specified Event from an &#39;El&#39;.  See Reflex.Dom.Widget.Basic</span></a>
+<a class="sourceLine" id="cb5-2" title="2">[ ]<span class="ot">   domEvent ::</span> <span class="dt">EventName</span> en <span class="ot">-&gt;</span> <span class="dt">El</span> <span class="ot">-&gt;</span> <span class="dt">Event</span> (<span class="dt">EventResultType</span> en)</a></code></pre></div>
+<p>Also see the "Connection to the real world" and "Time" sections in the <code>reflex</code> Quick Reference.</p>
+<h3 id="xmlhttprequest">XMLHttpRequest</h3>
+<p>Convenience functions for XMLHttpRequest. see Reflex.Dom.Xhr</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="co">-- Given method, URL, and config record (with default instance), construct a request.</span></a>
+<a class="sourceLine" id="cb6-2" title="2">[ ]<span class="ot">   xhrRequest ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">XhrRequestConfig</span> a <span class="ot">-&gt;</span> <span class="dt">XhrRequest</span> a</a>
+<a class="sourceLine" id="cb6-3" title="3"></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">-- Given Event of requests, issue them and produce Event of responses.</span></a>
+<a class="sourceLine" id="cb6-5" title="5">[<span class="dt">W</span>]<span class="ot">   performRequestAsync ::</span> <span class="dt">Event</span> (<span class="dt">XhrRequest</span> a) <span class="ot">-&gt;</span> m (<span class="dt">Event</span> <span class="dt">XhrResponse</span>)</a>
+<a class="sourceLine" id="cb6-6" title="6"></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">-- Issue a collection of requests, wait for them ALL to complete, return collected results.</span></a>
+<a class="sourceLine" id="cb6-8" title="8">[<span class="dt">W</span>]<span class="ot">   performRequestsAsync ::</span> <span class="dt">Traversable</span> f <span class="ot">=&gt;</span> <span class="dt">Event</span> (f (<span class="dt">XhrRequest</span> a)) <span class="ot">-&gt;</span> m (<span class="dt">Event</span> (f <span class="dt">XhrResponse</span>))</a>
+<a class="sourceLine" id="cb6-9" title="9"></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">-- Convenience function to decode JSON-encoded responses.</span></a>
+<a class="sourceLine" id="cb6-11" title="11">[ ]<span class="ot">   decodeXhrResponse ::</span> <span class="dt">FromJSON</span> a <span class="ot">=&gt;</span> <span class="dt">XhrResponse</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
+<a class="sourceLine" id="cb6-12" title="12"></a>
+<a class="sourceLine" id="cb6-13" title="13"><span class="co">-- Simplified interface to &quot;GET&quot; URLs and return decoded results.</span></a>
+<a class="sourceLine" id="cb6-14" title="14">[<span class="dt">W</span>]<span class="ot">   getAndDecode ::</span> <span class="dt">FromJSON</span> a <span class="ot">=&gt;</span> <span class="dt">Event</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Event</span> (<span class="dt">Maybe</span> a))</a></code></pre></div>
+<h2 id="startup">Startup</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">-- Reflex-Dom entry point.  Takes a monadic widget-building action of lengthy</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">-- type and turns it into an IO action.</span></a>
+<a class="sourceLine" id="cb7-3" title="3">[<span class="dt">I</span>]<span class="ot">   mainWidget ::</span></a>
+<a class="sourceLine" id="cb7-4" title="4">          <span class="dt">Widget</span> <span class="dt">Spider</span> (<span class="dt">Gui</span> <span class="dt">Spider</span> (<span class="dt">WithWebView</span> <span class="dt">SpiderHost</span>) (<span class="dt">HostFrame</span> <span class="dt">Spider</span>)) () <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-5" title="5">[<span class="dt">I</span>]<span class="ot">   mainWidgetWithHead ::</span></a>
+<a class="sourceLine" id="cb7-6" title="6">          <span class="dt">Widget</span> <span class="dt">Spider</span> (<span class="dt">Gui</span> <span class="dt">Spider</span> (<span class="dt">WithWebView</span> <span class="dt">SpiderHost</span>) (<span class="dt">HostFrame</span> <span class="dt">Spider</span>)) () <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb7-7" title="7">          <span class="dt">Widget</span> <span class="dt">Spider</span> (<span class="dt">Gui</span> <span class="dt">Spider</span> (<span class="dt">WithWebView</span> <span class="dt">SpiderHost</span>) (<span class="dt">HostFrame</span> <span class="dt">Spider</span>)) () <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-8" title="8">[<span class="dt">I</span>]<span class="ot">   mainWidgetWithCss ::</span></a>
+<a class="sourceLine" id="cb7-9" title="9">          <span class="dt">ByteString</span> <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb7-10" title="10">          <span class="dt">Widget</span> <span class="dt">Spider</span> (<span class="dt">Gui</span> <span class="dt">Spider</span> (<span class="dt">WithWebView</span> <span class="dt">SpiderHost</span>) (<span class="dt">HostFrame</span> <span class="dt">Spider</span>)) () <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a></code></pre></div>
+<p>Also see the corresponding section in the <code>reflex</code> Quick Reference.</p>
+</body>
+</html>

@@ -1,0 +1,26 @@
+digraph H {
+  rankdir="LR";
+
+  foldDyn [
+   shape=plaintext
+   label=<
+     <table border='1' cellborder='1'>
+     <tr><td colspan='2'>foldDyn</td></tr>
+     <tr><td port="reducer">a -&gt; b -&gt; b</td><td rowspan='2' port="output">Dynamic t b</td></tr>
+       <tr><td port="event">Event t a</td></tr>
+     </table>
+  >];
+
+  button [
+   shape=plaintext
+   label=<
+     <table border='1' cellborder='1'>
+     <tr><td>button :: DomBuilder m =&gt; m (Event t ())</td></tr>
+     <tr><td port="output">Event t ()</td></tr>
+     </table>
+  >];
+
+
+  button:output -> foldDyn:event;
+
+}

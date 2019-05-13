@@ -1,0 +1,106 @@
+digraph H {
+  rankdir="LR";
+
+  foldDyn [
+           shape=plaintext
+           label=<
+           <table border='1' cellborder='1'>
+            <tr><td colspan='2'>foldDyn</td></tr>
+            <tr><td port="reducer">e -&gt; s -&gt; s</td><td rowspan='3' port="output">Dynamic t s</td></tr>
+            <tr><td port="init">s</td></tr>
+            <tr><td port="event">Event t e</td></tr>
+           </table>>
+  ];
+
+  appEndo [
+         shape=plaintext;
+         label=<
+         <table border='1'>
+         <tr><td>appEndo :: Endo a -&gt; a -&gt; a</td></tr>
+         </table>
+         >
+  ];
+
+  resetEndo [
+           shape=plaintext
+           label=<
+           <table border='1' cellborder='1'>
+           <tr><td>Endo $ const 0</td></tr>
+           </table>
+           >
+           ];
+
+  incEndo [
+             shape=plaintext
+             label=<
+             <table border='1' cellborder='1'>
+             <tr><td>Endo (+1)</td></tr>
+             </table>
+             >
+             ];
+
+  mkReset [
+       shape=plaintext
+       label=<
+       <table border='1' cellborder='1'>
+       <tr><td port="inputVal">b</td><td port="output" rowspan='3'>Event t b</td></tr>
+       <tr><td>&lt;$</td></tr>
+       <tr><td port="inputE">Event t a</td></tr>
+       </table>
+       >
+       ];
+
+  mkInc [
+           shape=plaintext
+           label=<
+           <table border='1' cellborder='1'>
+           <tr><td port="inputVal">b</td><td port="output" rowspan='3'>Event t b</td></tr>
+           <tr><td>&lt;$</td></tr>
+           <tr><td port="inputE">Event t a</td></tr>
+           </table>
+           >
+           ];
+
+  mappend [
+         shape=plaintext
+         label=<
+         <table border='1' cellborder='1'>
+         <tr><td port="inputA">Event t a</td><td rowspan="3" port="output">Event t a</td></tr>
+         <tr><td>&lt;&gt;</td></tr>
+         <tr><td port="inputA">Event t a</td></tr>
+         </table>
+         >
+         ];
+
+
+  incButton [
+          shape=plaintext
+          label=<
+          <table border='1' cellborder='1'>
+          <tr><td>incButton</td></tr>
+          <tr><td port='output'>Event t ()</td></tr>
+          </table>
+          >
+  ];
+
+  resetButton [
+       shape=plaintext
+       label=<
+       <table border='1' cellborder='1'>
+       <tr><td>resetButton</td></tr>
+       <tr><td port='output'>Event t ()</td></tr>
+       </table>
+       >
+  ];
+
+  resetButton:output   -> mkReset:inputE;
+  incButton:output     -> mkInc:inputE;
+  incEndo              -> mkInc:inputVal;
+  resetEndo            -> mkReset:inputVal;
+  appEndo              -> foldDyn:reducer;
+  mkInc                -> mappend:inputA;
+  mkReset              -> mappend:inputB;
+  mappend:output       -> foldDyn:event;
+  0                    -> foldDyn:init;
+
+}

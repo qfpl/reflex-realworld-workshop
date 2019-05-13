@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Workshop Docs</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="file:///home/bkolera/src/github/qfpl/reflex-realworld-workshop/docs.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="workshop-setup">Workshop Setup</h1>
+<p>This workshop is built as an <a href="https://github.com/obsidiansystems/obelisk/">obelisk</a> application, so getting it runnable involves getting the obelisk command and running it so that you have all of the project dependencies. Whichever option you pick, please make sure to run all the steps so that you have no unexpected need to download things in the workshop.</p>
+<p>This uses <a href="https://nixos.org/nix/">nix</a> so you will need nix first. If you don't already have this setup and working, then it will be best to use the VM or docker images that have everything already installed for you. Nix also doesn't fully work on windows yet, but it <a href="https://github.com/reflex-frp/reflex-platform/issues/303">is very close</a>.</p>
+<p>There's also a postgres database to setup. The VM and docker compose setup have this running already. You can use the docker database standalone in Nix/NixOS.</p>
+<p>The VM is the easiest option as it has most things pre-installed, running and ready to go. The only thing you may want to do is configure a text editor (it has vim, spacemacs and vscode preinstalled).</p>
+<p>The docker route should use less resources since it doesn't have to run a whole VM and allows you to use your editor on your machine. The docker way has some mild annoyances (writing files owned by root to the checkout and the haddocks aren't as accessible). The VM is probably the best route unless VBox doesn't work for you.</p>
+<p>The Nix/NixOS route is the easiest if you are comfortable with nix. It has been mostly tested on Linux, but obelisk is supported on MacOS and at least one person has successfully built the workshop on MacOS. So it should be fine.</p>
+<p>The VM and the Docker image is around 3GiB to download. With nix, it's about 700MiB of dependencies to download from the caches.</p>
+<p>In all cases, the end result of this process should look like this, with the skeleton workshop code running of <a href="http://localhost:8001">http://localhost:8001</a> and the example code running on port 8000 and showing test data that involves ponies. :)</p>
+<p>Note that the example project is included in the workshop as a submodule, so if you checkout code, you only need to check out <a href="https://github.com/qfpl/reflex-realworld-workshop">https://github.com/qfpl/reflex-realworld-workshop</a> yourself! It's included as a submodule so that we can always keep the workshop and the examples pinned together so you don't accidentally have a newer/older example that could be confusing.</p>
+<p><img src="expected_setup.png" alt="Expected setup" /></p>
+<p>If any of these steps don't work for you, please either file a github issue, <a href="https://gitter.im/reflex-realworld-workshop/community?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/reflex-realworld-workshop/community.svg" alt="Chat on Gitter" /></a> or jump onto #qfpl on irc.freenode.net.</p>
+<p>Ben will have some USB drives with the VM and the docker layers on them if you're stuck on the day.</p>
+<h2 id="vm">VM</h2>
+<h3 id="download-ova-internet-required">Download OVA (Internet Required)</h3>
+<p>Download the OVA from running:</p>
+<p><code>curl https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$(curl https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/OVA_LATEST_VERSION).ova &gt; workshop.ova</code>.</p>
+<p>Be careful about your shell being friendly and escaping the parens when you paste!</p>
+<p>If you don't have curl, just hit <a href="https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/OVA_LATEST_VERSION">the OVA_LATEST _VERSION_FILE</a> in a browser and take that number and download the appropriate version with this link: <a href="https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$VERSION.ova">https://s3-ap-southeast-2.amazonaws.com/reflex-realworld-workshop/reflex-realworld-workshop.$VERSION.ova</a>.</p>
+<h3 id="import-appliance">Import Appliance</h3>
+<p>Import that appliance by opening up the virtual box gui &gt; File &gt; Import Appliance &gt; select file. The defaults should be fine.</p>
+<h3 id="test-setup">Test Setup</h3>
+<p>Boot that VM up. Once it is up, open up three terminals. These will download some final things, so it's important to do this before the workshop.</p>
+<ul>
+<li><code>cd reflex-realworld-workshop</code> then <code>ob run</code></li>
+<li><code>cd reflex-realworld-workshop/reflex-workshop-example</code> then <code>ob run</code></li>
+<li><code>cd reflex-realworld-workshop</code> then <code>devenv/nix/hoogle-server</code></li>
+</ul>
+<p>You should be able to open three tabs up:</p>
+<ul>
+<li><a href="http://localhost:8000">http://localhost:8000</a> - Fully working example</li>
+<li><a href="http://localhost:8001">http://localhost:8001</a> - Workshop code</li>
+<li><a href="http://localhost:8080">http://localhost:8080</a> - Local Hoogle Server</li>
+</ul>
+<p>Once you have this setup, you should just be able to <code>git pull</code> and rerun both ob runs on the night before lamdbajam. This will ensure you have the latest code and there should be no huge redownloads or needing to download the whole image again.</p>
+<p>Please watch the repo for releases and/or join gitter to keep in touch or ask questions! :)</p>
+<h2 id="docker">Docker</h2>
+<h3 id="checkout-internet-required">Checkout (Internet Required)</h3>
+<p>Checkout this code if you haven't already:</p>
+<p><code>git clone --recurse-submodules https://github.com/qfpl/reflex-realworld-workshop.git</code></p>
+<h3 id="install-docker-compose-internet-required">Install Docker Compose (Internet Required)</h3>
+<p>You will need <a href="https://docs.docker.com/compose/install/">docker compose</a> installed.</p>
+<h3 id="install-chromium-internet-required">Install Chromium (Internet Required)</h3>
+<p>The jsaddle development environment only works in chromium, so if you use firefox or safari only please install chrom before the workshop!</p>
+<h3 id="download-layers--test-internet-required">Download Layers &amp; Test (Internet Required)</h3>
+<p>Run this command: <code>devenv/docker/ob run-example</code> and load up <a href="http://localhost:8000">http://localhost:8000</a> . If you see a page loaded with some articles, everything is all good.</p>
+<p>Run this command <code>devenv/docker/ob run-workshop</code> and load up <a href="http://localhost:8001">http://localhost:8001</a> . If you see a much blanker page with no errors, you're pretty good!</p>
+<h3 id="getting-help--keeping-up-to-date">Getting help / keeping up to date</h3>
+<p>Once you have this setup, you should just be able to <code>git pull &amp;&amp; git submodule update</code> and rerun both ob runs on the night before lamdbajam. If I've had to change the image at all, this will download another ~3GiB at this time. Sorry! You'll have to reset the config files back so that the pull can happen.</p>
+<p>Please watch the repo for releases and/or join gitter to keep in touch or ask questions! :)</p>
+<h2 id="nix--nixos">Nix / NixOS</h2>
+<h3 id="checkout-internet-required-1">Checkout (Internet Required)</h3>
+<p>Checkout this code if you haven't already:</p>
+<p><code>git clone --recurse-submodules https://github.com/qfpl/reflex-realworld-workshop.git</code></p>
+<h3 id="cache-setup">Cache Setup</h3>
+<p>Add the nixcache.reflex-frp.org, qfpl.cachix.org and hydra.qfpl.io caches to your nix.conf or nixos configuration.</p>
+<p>See <a href="devenv/common/nix.conf">nix.conf</a> for a nix example or see a <a href="devenv/vbox/default.nix">NixOS</a> example.</p>
+<h3 id="install-obelisk-internet-required">Install Obelisk (Internet Required)</h3>
+<p>Follow the <a href="https://github.com/obsidiansystems/obelisk/#installing-obelisk">obelisk installation instructions</a> ignoring the cache part because you already set that up in the last step.</p>
+<h3 id="install-chromium-internet-required-1">Install Chromium (Internet Required)</h3>
+<p>The jsaddle development environment only works in chromium, so if you use firefox or safari only please install chrom before the workshop!</p>
+<h3 id="setup-the-database-internet-required">Setup the database (Internet Required)</h3>
+<p>The easiest way is to use docker. <code>docker run -p 5432:5432 benkolera/reflex-realworld-workshop-pg:latest</code> will give you a running database on localhost with the schema, data and credentials all good. This way is easiest if you already have docker. If you are already running postgres, you'll get an error so change the port to <code>-p 5433:5432</code>. Just be sure to change config/backend/pgConnStr to have a postgres:/conduit:conduit@localhost:5433/conduit in both the workshop and examples to reflect the port change.</p>
+<p>If you don't have docker and would rather set things up in postgres yourself what we need is:</p>
+<ul>
+<li>A user called conduit that can access the database over tcp with a username and password.</li>
+<li>A database called conduit, preferably owned by conduit so you don't need to do grants. devenv/vbox/setup.sql creates the DB and user with a default password of conduit.</li>
+<li>The database tables and table data. The dump in devenv/common/dbdump.sql. creates the DB and schema and test data.</li>
+<li>If you change any details, be sure to reflect them in the config/backend/pgConnStr config in the workshop and full example.</li>
+</ul>
+<h3 id="run-the-workshop-internet-required">Run the workshop (Internet Required)</h3>
+<p>Everything should be cached on qfpl.cachix.org. If you've setup the caches it should just be some downloading (of about 750MiB) rather than building a lot of code from source. Chris McKay has built it on MacOS nix and it worked fine and should now be cached thanks to him too. :)</p>
+<p>Run <code>ob run</code> in: <code>./reflex-realworld-example</code> and then check out <a href="http://localhost:8000">http://localhost:8000</a> . You should see a page with some articles and ponies on it. If this works, the DB is all setup and the code is built.</p>
+<p>Repeat <code>ob run</code> in this checkout and check out <a href="http://localhost:8001">http://localhost:8001</a> . This should be more blank, but it should load a page with the nav bar and title.</p>
+<p>If this is all happy you are good to go! You may need to git pull before the workshop again, but that'll be a much less painful experience.</p>
+<h3 id="getting-help--keeping-up-to-date-1">Getting help / keeping up to date</h3>
+<p>Once you have this setup, you should just be able to <code>git pull</code> and rerun both ob runs on the night before lamdbajam.</p>
+<p>Please watch the repo for releases and/or join gitter to keep in touch or ask questions! :)</p>
+</body>
+</html>

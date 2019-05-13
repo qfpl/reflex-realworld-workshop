@@ -1,3 +1,8 @@
+# Answer for the home page.
+
+Because the actual example has the feed built in it is a bit more complicated. So here is the answer as far as the exercise goes.
+
+```haskell
 {-# LANGUAGE FlexibleContexts, LambdaCase, MultiParamTypeClasses, OverloadedStrings, PatternSynonyms #-}
 {-# LANGUAGE RecursiveDo, ScopedTypeVariables, TemplateHaskell                                       #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports -fno-warn-redundant-constraints                             #-}
@@ -56,6 +61,9 @@ homePage = elClass "div" "home-page" $ mdo
   -- :: (Reflex t, Applicative m, Prerender js t m)
   -- => Event t ()
   -- -> m (ClientRes t (Namespace "tags" [Text]))
+  (allTagsSuccessE,_,_) <- Client.allTags (_pbE <> void (updated _tokDyn))
+  allTagsDyn <- holdDyn (Namespace []) allTagsSuccessE
+  selectionDyn <- holdDyn GlobalSelected (NEL.head <$> selectionChangeE)
 
   -- listArticles
   -- :: (Reflex t, Applicative m, Prerender js t m)
@@ -67,29 +75,42 @@ homePage = elClass "div" "home-page" $ mdo
   -- -> Dynamic t [Text]           -- authors
   -- -> Event t ()                 -- submit
   -- -> m (ClientRes t Articles)
+  (articlesSuccessE,_,artsLoadingDyn) <- Client.listArticles
+    _tokDyn
+    (constDyn QNone)
+    (constDyn QNone)
+    (homePageSelected [] (:[]) <$> selectionDyn)
+    (constDyn [])
+    (constDyn [])
+    (fold [_pbE, void (updated _tokDyn), void (updated selectionDyn)])
+  artsDyn <- holdDyn (Articles [] 0) articlesSuccessE
 
   elClass "div" "banner" $
     elClass "div" "container" $ do
       elClass "h1" "logo-font" $ text "conduit"
       el "p" $ text "A place to share your knowledge"
 
-  elClass "div" "container page" $ elClass "div" "row" $ do
+  (_, selectionChangeE) <- runEventWriterT $ elClass "div" "container page" $ elClass "div" "row" $ do
     elClass "div" "col-md-9" $ do
       elClass "div" "feed-toggle" $
         elClass "ul" "nav nav-pills outline-active" $ do
-          -- TODO: Only should be active when selection is global.
-          -- TODO: Clicking this button should change the selection
-          _ <- elClass "li" "nav-item" $ buttonClass "nav-link active" (constDyn False) $ text "Global Feed"
-          -- TODO: Need to render an extra tab here when a tag is selected.
-          pure ()
-      el "p" $ text "TODO: Load articles"
+          let globalClassDyn = ("nav-link" <>) . (^._GlobalSelected.to (const " active")) <$> selectionDyn
+          globalSelected <- elClass "li" "nav-item" $ buttonDynClass globalClassDyn (constDyn False) $ text "Global Feed"
+          tellEvent $ pure GlobalSelected <$ globalSelected
+          void . dyn . ffor selectionDyn $ homePageSelected blank $ \t ->
+            void . elClass "li" "nav-item" $ buttonClass "nav-link active" (constDyn False) $ text t
+
+      articlesPreview artsLoadingDyn artsDyn
 
     elClass "div" "col-md-3" $
       elClass "div" "sidebar" $ do
         el "p" $ text "Popular Tags"
         elClass "div" "tag-list" $ do
           -- TODO: Combine simpleList and tagPill to print out all tags
-          el "p" $ text "TODO - Load tags"
+          --el "p" $ text "TODO - Load tags"
+          void $ list (Map.fromList . fmap (\a -> (a,a)) . unNamespace <$> allTagsDyn) tagPill
+
+  pure ()
 
 tagPill
   :: forall t m
@@ -106,3 +127,4 @@ tagPill tDyn = do
   -- When the button is clicked, tag the event with the current value of the tDyn text.
   -- And then wrap it up in a Non empty list of HomeSelectedEvents (a list because EventWriter needs a semigroup)
   tellEvent $ pure . TagSelected <$> current tDyn <@ domEvent Click e
+```

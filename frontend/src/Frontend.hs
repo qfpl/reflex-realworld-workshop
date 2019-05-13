@@ -32,6 +32,7 @@ import           Frontend.Profile                (profile)
 import           Frontend.Register               (register)
 import           Frontend.Settings               (settings)
 import           Frontend.Utils                  (pathSegmentSubRoute, routeLinkClass)
+import           Frontend.Warmup                 (warmup)
 
 mapStorageT :: (forall x. m x -> n x) -> StorageT t k m a -> StorageT t k n a
 mapStorageT f = StorageT . mapReaderT (mapEventWriterT f) . unStorageT
@@ -91,6 +92,7 @@ htmlBody = mapRoutedT unravelAppState $ do
       FrontendRoute_Settings -> settings
       FrontendRoute_Profile  -> pathSegmentSubRoute profile
       FrontendRoute_Editor   -> editor
+      FrontendRoute_Warmup   -> warmup
 
 footer
   :: ( DomBuilder t m

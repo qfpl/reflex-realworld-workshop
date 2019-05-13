@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Workshop Docs</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="file:///home/bkolera/src/github/qfpl/reflex-realworld-workshop/docs.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="login">Login</h1>
+<p>In this exercise, we are going to get a feel for how we build up dynamics into a validated output from a form.</p>
+<p>Learning outcomes:</p>
+<ul>
+<li>Put some basic dom structure in place.</li>
+<li>Show how we can create reflex-dom components and access their output dynamics / events.</li>
+<li>Make sure are comfortable with Applicative syntax and how we can combine dynamics with them.</li>
+<li>Submit an ajax request and handle the success and error cases.</li>
+</ul>
+<p>Checkout the login page on <a href="http://localhost:8000/login">http://localhost:8000/login</a> and open up the workshop code in frontend/src/Frontend/Login.hs.</p>
+<h2 id="combine-dynamics-with-applicative">Combine Dynamics with Applicative</h2>
+<p>Dynamic has an applicative instance so you can use liftA2 and friends and also &lt;*&gt;. If you are unfamiliar with applicative, it's best to use liftA2. See:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="op">:</span>t liftA2 <span class="op">@</span>(<span class="dt">Dynamic</span> __)</a>
+<a class="sourceLine" id="cb1-2" title="2">liftA2 <span class="op">@</span>(<span class="dt">Dynamic</span> _)</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="ot">  ::</span> <span class="dt">Applicative</span> (<span class="dt">Dynamic</span> w) <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb1-4" title="4">     (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w a <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w b <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w c</a>
+<a class="sourceLine" id="cb1-5" title="5">liftA3 <span class="op">@</span>(<span class="dt">Dynamic</span> _)</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="ot">  ::</span> <span class="dt">Applicative</span> (<span class="dt">Dynamic</span> w) <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb1-7" title="7">     (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> d)</a>
+<a class="sourceLine" id="cb1-8" title="8">     <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w a <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w b <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w c <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> w d</a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co">-- ... etc</span></a></code></pre></div>
+<p>Note that:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">liftA2 f a1 a2 <span class="ot">=</span> f <span class="op">&lt;$&gt;</span> a1 <span class="op">&lt;*&gt;</span> a2</a></code></pre></div>
+<p>In case that makes the &lt;*&gt; style more intuitive to you.</p>
+<p>Use applicative to transform the let creds to a <code>Dynamic t (Namespace "user" Credentials)</code> by connecting together the value of each form field.</p>
+<p>To get a Dynamic t Text of the current value of an input element, use the function _inputElement_value . E.g:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="op">:</span>t \__inputElement_value emailI</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="dt">Dynamic</span> t <span class="dt">Text</span></a></code></pre></div>
+<h2 id="connect-to-client-call">Connect to client call</h2>
+<p>In the commented out Client.login call, you'll note that the inputs to that are the dynamic that we just made plus an event that tells the machinery to make a backend call. Even if the dynamics update due to form inputs, the backend wont fire until the input event is fired.</p>
+<p>Connect the dynamic that we just made to the client, and attach the button click event to the client call.</p>
+<p>The client returns a triple with an event for success, an event for error and a dynamic that represents whether we are waiting for the backend or not.</p>
+<p>To test, use the email "dashy@mlp" and password "Password". Given that we have no error handling at the moment, it may be good to have the network tab open to see if the call is working.</p>
+<h2 id="login-on-a-successful-call">Login on a successful call</h2>
+<p>If we have a successful login call, we need to tell our central state that there has been a login so that the token can be put into local storage. Note the two constraints on the login widget:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">     , <span class="dt">EventWriter</span> t (<span class="dt">NonEmpty</span> e) m  <span class="co">-- Our context can dispatch events of type NonEmpty e</span></a>
+<a class="sourceLine" id="cb4-2" title="2">     , <span class="dt">AsFrontendEvent</span> e             <span class="co">-- And e is constrained by a classy prism.</span></a></code></pre></div>
+<p>The AsFrontendEvent class means that we don't depend on a concrete event type but instead just depend on any type that can fit a frontend event into it. This allows our caller to have an event writer of a bigger event type than this level. To construct a LogIn event in this abstract way:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">eT <span class="dt">Frontend</span><span class="op">&gt;</span> <span class="op">:</span>t (_LogIn <span class="op">#</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2">(_LogIn <span class="op">#</span>)</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ot">  ::</span> <span class="dt">AsFrontendEvent</span> t <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb5-4" title="4">     <span class="dt">Common.Conduit.Api.User.Account.Account</span> <span class="ot">-&gt;</span> t</a></code></pre></div>
+<p>This means that we can tell event like the one that has a placeholder event of never. Connect it to the backend success event.</p>
+<p>You can log yourself out by pressing "Ctrl-Shift-I" in chromium, going to Applications, expanding local storage in the left hand tree and then right clicking on <a href="http://localhost:8001">http://localhost:8001</a> and clearing storage. You should be logged out without even refreshing the page.</p>
+<h2 id="redirect-on-login">Redirect on Login</h2>
+<p>At this point, the login ought to work and the nav bar should change, but it just stays on the login page. This is not great! Thankfully, there is a very handy thing in the FrontendState module:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">noUserWidget</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ot">  ::</span> ( <span class="dt">HasLoggedInAccount</span> s</a>
+<a class="sourceLine" id="cb6-3" title="3">     , <span class="dt">HasFrontendState</span> t s m</a>
+<a class="sourceLine" id="cb6-4" title="4">     , <span class="dt">SetRoute</span> t (<span class="dt">R</span> <span class="dt">FrontendRoute</span>) m</a>
+<a class="sourceLine" id="cb6-5" title="5">     , <span class="dt">DomBuilder</span> t m</a>
+<a class="sourceLine" id="cb6-6" title="6">     , <span class="dt">PostBuild</span> t m</a>
+<a class="sourceLine" id="cb6-7" title="7">     )</a>
+<a class="sourceLine" id="cb6-8" title="8">  <span class="ot">=&gt;</span> m ()</a>
+<a class="sourceLine" id="cb6-9" title="9">  <span class="ot">-&gt;</span> m ()</a></code></pre></div>
+<p>which will take a computation that can set route, build dom and has frontend state that contains a logged in account. If there is no user logged in, it will run the supplied domBuilder. Otherwise it redirects to the home page.</p>
+<p>Wrap it around the entire login page and refresh the page. You should get redirected to home. If you manually clear storage, you should be able to navigate to <a href="http://localhost:8001/login">http://localhost:8001/login</a> again. Then once the login call succeeds you should get redirected immediately.</p>
+<p>This is the power of reflex-dom. To build abstractions that build DOM with respect to time varying state. Can you imagine writing such a painfree and reusable abstraction in other frontend frameworks? I find this pretty exciting! :)</p>
+<h2 id="next-page">Next Page</h2>
+<p><a href="./03-settings.html">03-settings</a></p>
+</body>
+</html>

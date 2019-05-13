@@ -1,0 +1,61 @@
+digraph H {
+  rankdir="LR";
+
+  foldDyn [
+           shape=plaintext
+           label=<
+           <table border='1' cellborder='1'>
+            <tr><td colspan='2'>foldDyn</td></tr>
+            <tr><td port="reducer">() -&gt; Int -&gt; Int</td><td rowspan='3' port="output">Dynamic t Int</td></tr>
+            <tr><td port="init">Int</td></tr>
+            <tr><td port="event">Event t &#40;&#41;</td></tr>
+           </table>>
+  ];
+
+  count [
+         shape=plaintext;
+         label=<
+         <table border='1'>
+         <tr><td>reducer :: &#40;&#41; -&gt; Int -&gt; Int</td></tr>
+         <tr><td>reducer _ old = old + 1</td></tr>
+         </table>
+         >
+  ];
+
+  button [
+          shape=plaintext
+          label=<
+          <table border='1' cellborder='1'>
+          <tr><td>button :: DomBuilder t m =&gt; m (Event t &#40;&#41;)</td></tr>
+            <tr><td port="output">Event t &#40;&#41;</td></tr>
+          </table>
+  >];
+
+  display [
+          shape=plaintext
+          label=<
+          <table border='1' cellborder='1'>
+          <tr><td colspan='2'>display <br />
+:: (DomBuilder t m, PostBuild t m, Show a)<br />
+=&gt; Dynamic t a <br />
+-&gt;  m ()</td></tr>
+          <tr><td port="input">Dynamic t a</td><td>m ()</td></tr>
+          </table>
+          >
+  ];
+
+  button [
+          shape=plaintext
+          label=<
+          <table border='1' cellborder='1'>
+          <tr><td>button :: DomBuilder t m =&gt; Text -&gt; m (Event t ())</td></tr>
+          <tr><td port='output'>m (Event t ())</td></tr>
+          </table>
+          >];
+
+  button:output  -> foldDyn:event;
+  0              -> foldDyn:init;
+  count          -> foldDyn:reducer;
+  foldDyn:output -> display:input;
+
+}

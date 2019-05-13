@@ -94,12 +94,12 @@ getProfile tokenDyn usernameDyn submitE = fmap switchClientRes $ prerender (pure
 listArticles
   :: (Reflex t, Applicative m, Prerender js t m)
   => Dynamic t (Maybe Token)
-  -> Dynamic t (QParam Integer)
-  -> Dynamic t (QParam Integer)
-  -> Dynamic t [Text]
-  -> Dynamic t [Text]
-  -> Dynamic t [Text]
-  -> Event t ()
+  -> Dynamic t (QParam Integer) -- limit
+  -> Dynamic t (QParam Integer) -- offset
+  -> Dynamic t [Text]           -- authors
+  -> Dynamic t [Text]           -- favourited
+  -> Dynamic t [Text]           -- tags
+  -> Event t ()                 -- submit
   -> m (ClientRes t Articles)
 listArticles tokenDyn limitDyn offsetDyn authorsDyn favoritedsDyn tagsDyn submitE =
   fmap switchClientRes $ prerender (pure emptyClientRes) $ do

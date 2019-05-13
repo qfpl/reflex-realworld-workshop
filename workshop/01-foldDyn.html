@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Workshop Docs</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="file:///home/bkolera/src/github/qfpl/reflex-realworld-workshop/docs.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="folddyn">foldDyn</h1>
+<p>This recaps the basic reflex dom example that I talked about in the talk. There is no actual exercise to do here and you may just need to skim this if it is all fairly comfy. If you haven't done any reflex before, it is a good idea to read this carefully or come back to it if the exercises don't make sense.</p>
+<p>Learning outcomes:</p>
+<ul>
+<li>Get a basic feel for events and dynamics</li>
+<li>Get a feel for foldDyn being a flux reducer</li>
+<li>Get a feel for EventWriter being analogous to a dispatcher</li>
+<li>Revise mtl style haskell before things ramp up. :)</li>
+</ul>
+<h2 id="counting-events-with-folddyn">Counting Events with FoldDyn</h2>
+<p>This example is just in the workshop and not in the example. See <a href="http://localhost:8001/warmup">http://localhost:8001/warmup</a> and <a href="../frontend/src/Frontend/Warmup.hs">Warmup.hs</a>.</p>
+<p>In reflex dom, a button returns an event that will fire when the button is clicked:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">button ::</span> <span class="dt">DomBuilder</span> t m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Event</span> t ())</a></code></pre></div>
+<p>Events are the driving force of reflex. In fact, the only time something happens in reflex is from a external event (click, callback) that kicks off a new frame. That event pokes it way into the network and things react to it.</p>
+<p>Aside from performEvent, which allows us to run some external effect as a reaction to an event we have, the main building block for reacting to an event is foldDyn.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">foldDyn</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="ot">  ::</span> ( <span class="dt">Reflex</span> t        <span class="co">-- ignore this for now</span></a>
+<a class="sourceLine" id="cb2-3" title="3">     , <span class="dt">MonadHold</span> t m   <span class="co">-- MonadHold allows the m that we are working in to hold some state between frames</span></a>
+<a class="sourceLine" id="cb2-4" title="4">     , <span class="dt">MonadFix</span> m      <span class="co">-- MonadFix allows for the building of cyclical FP grapss</span></a>
+<a class="sourceLine" id="cb2-5" title="5">     )</a>
+<a class="sourceLine" id="cb2-6" title="6">   <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b)    <span class="co">-- Reducer function. Takes the event value, the old state and returns the new state</span></a>
+<a class="sourceLine" id="cb2-7" title="7">   <span class="ot">-&gt;</span> b                <span class="co">-- The initial state</span></a>
+<a class="sourceLine" id="cb2-8" title="8">   <span class="ot">-&gt;</span> <span class="dt">Event</span> t a        <span class="co">-- The event. Each time this event fires, it&#39;ll rerun the &#39;reducer&#39;</span></a>
+<a class="sourceLine" id="cb2-9" title="9">   <span class="ot">-&gt;</span> m (<span class="dt">Dynamic</span> t b)  <span class="co">-- This dynamic holds the accumulated state.</span></a></code></pre></div>
+<p>We can think of an event as something only having a value at discrete points in time (i.e: when it 'fires'). Whereas a dynamic models a varible that always has a variable that varies over time. For foldDyn, we see this with it starting at a initial value and then getting updated with the reducer every time the input event fires into the reducer.</p>
+<p>There are some definite things that we are glossing over at this point. But that's OK. Lets look at this like a graph so that we can build up an intuition good enough for the workshop.</p>
+<p><img src="./01-foldDyn/foldDyn.png" alt="basic folddyn shape" /></p>
+<p>If we want to Connect a button to foldDyn to count how many times the button has been pressed, we want something that looks like this graph:</p>
+<p><img src="./01-foldDyn/counter.png" alt="simple counter" /></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">warmup1 ::</span> ( <span class="dt">DomBuilder</span> t m, <span class="dt">MonadHold</span> t m, <span class="dt">MonadFix</span> m, <span class="dt">PostBuild</span> t m) <span class="ot">=&gt;</span> m ()</a>
+<a class="sourceLine" id="cb3-2" title="2">warmup1 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-3" title="3">  bClickE  <span class="ot">&lt;-</span> button <span class="st">&quot;Click Me&quot;</span></a>
+<a class="sourceLine" id="cb3-4" title="4">  countDyn <span class="ot">&lt;-</span> foldDyn (\_ old <span class="ot">-&gt;</span> old <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">0</span><span class="ot"> ::</span> <span class="dt">Int</span>) bClickE</a>
+<a class="sourceLine" id="cb3-5" title="5">  text <span class="st">&quot; &quot;</span></a>
+<a class="sourceLine" id="cb3-6" title="6">  display countDyn</a></code></pre></div>
+<p>This shows DomBuilder typeclass of reflex-dom, which is critical to building our UI. We build a button, then collect the time varying state from capturing the clicks with foldDyn. Then we display a text node and a dynamic text node that uses a show instance to display the value (i.e display).</p>
+<p>In this case we are lucky because we can build the dom in the same order as wiring up the FRP parts. If we have cycles or need a different ordering, there's something slightly different that we will see later.</p>
+<h2 id="composing-events-with-a-semigroup">Composing Events with a Semigroup</h2>
+<p>But what happens if we want to have more than one event feeding into our foldDyn? Say if we wanted to add a reset button that resets the counter to zero as well as the increment button?</p>
+<p>Merge is our friend. As long as the datatype inside the Event is a semigroup, we can use (&lt;&gt;) to merge two event streams. It's at this point that we have to not just send an event of Unit into our foldDyn. A really helpful tool for this is called Endo. It's just a wrapper for a function from a -&gt; a where (&lt;&gt;) is compose and mempty is id.</p>
+<pre><code>&gt; import Data.Monoid.Endo
+&gt; let idEndo  = mempty :: Endo Int
+&gt; let incEndo = Endo $ (+ (1::Int))
+&gt; appEndo idEndo 5
+5
+&gt; appEndo incEndo 5
+6
+&gt; appEndo (fold [incEndo, incEndo]) 5
+7
+</code></pre>
+<p>With the powers of Endo and (&lt;&gt;), we can implement the following.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  addClickE   <span class="ot">&lt;-</span> button <span class="st">&quot;Click me&quot;</span></a>
+<a class="sourceLine" id="cb5-2" title="2">  resetClickE <span class="ot">&lt;-</span> button <span class="st">&quot;Reset me&quot;</span></a>
+<a class="sourceLine" id="cb5-3" title="3"></a>
+<a class="sourceLine" id="cb5-4" title="4">  <span class="kw">let</span> addE     <span class="ot">=</span> <span class="dt">Endo</span> (<span class="op">+</span><span class="dv">1</span>)      <span class="op">&lt;$</span> addClickE</a>
+<a class="sourceLine" id="cb5-5" title="5">  <span class="kw">let</span> resetE   <span class="ot">=</span> <span class="dt">Endo</span> (<span class="fu">const</span> <span class="dv">0</span>) <span class="op">&lt;$</span> resetClickE</a>
+<a class="sourceLine" id="cb5-6" title="6">  <span class="kw">let</span> updatesE <span class="ot">=</span> addE <span class="op">&lt;&gt;</span><span class="ot"> resetE ::</span> <span class="dt">Event</span> t (<span class="dt">Endo</span> <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb5-7" title="7"></a>
+<a class="sourceLine" id="cb5-8" title="8">  clickCountDyn <span class="ot">&lt;-</span> foldDyn appEndo <span class="dv">0</span> updatesE</a>
+<a class="sourceLine" id="cb5-9" title="9">  text <span class="st">&quot; &quot;</span></a>
+<a class="sourceLine" id="cb5-10" title="10">  display clickCountDyn</a></code></pre></div>
+<p>Note that (&lt;$) just throws away whatever was in the event and replaces it with the thing on the left, turning out Event t () into a Event t (Endo Int).</p>
+<p>In graphical form, this looks like:</p>
+<p><img src="01-foldDyn/merge.png" alt="merge events" /></p>
+<h2 id="mtl-style-dispatch-and-subscription">MTL Style Dispatch and Subscription</h2>
+<p>A lot of the power of redux comes from not having to bubble up event dispatching all the way to the parent state and then not having to explicitly wire state back down the tree. In reflex we have EventWriter for dispatch and MonadReader, and the mtl style of programming has some really wonderful properties that emerge.</p>
+<p>Lets take our previous counter example and refactor it into two components, resetButton and incButton.</p>
+<p>We are perfectly able to make them have type signatures like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">resetButton ::</span> (<span class="dt">DomBuilder</span> t m) <span class="ot">=&gt;</span> m (<span class="dt">Event</span> t (<span class="dt">Endo</span> t m))</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ot">incButton ::</span> (<span class="dt">DomBuilder</span> t m) <span class="ot">=&gt;</span> m (<span class="dt">Event</span> t (<span class="dt">Endo</span> t m))</a></code></pre></div>
+<p>but then all of the parent widgets would need to manually wire those events up to whereever our foldDyn is, which is fairly laborious, especially if adding a new feature deep into a tree and for refactoring. We can write these functions instead like this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">addButton ::</span> (<span class="dt">DomBuilder</span> t m, <span class="dt">EventWriter</span> t (<span class="dt">Endo</span> <span class="dt">Int</span>) m) <span class="ot">=&gt;</span> m ()</a>
+<a class="sourceLine" id="cb7-2" title="2">addButton <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-3" title="3">  addClickE   <span class="ot">&lt;-</span> button <span class="st">&quot;Click me&quot;</span></a>
+<a class="sourceLine" id="cb7-4" title="4">  tellEvent <span class="op">$</span> <span class="dt">Endo</span> (<span class="op">+</span><span class="dv">1</span>) <span class="op">&lt;$</span> addClickE</a>
+<a class="sourceLine" id="cb7-5" title="5"></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="ot">resetButton ::</span> (<span class="dt">DomBuilder</span> t m, <span class="dt">EventWriter</span> t (<span class="dt">Endo</span> <span class="dt">Int</span>) m) <span class="ot">=&gt;</span> m ()</a>
+<a class="sourceLine" id="cb7-7" title="7">resetButton <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-8" title="8">  resetClickE <span class="ot">&lt;-</span> button <span class="st">&quot;Reset me&quot;</span></a>
+<a class="sourceLine" id="cb7-9" title="9">  tellEvent <span class="op">$</span> <span class="dt">Endo</span> (<span class="fu">const</span> <span class="dv">0</span>) <span class="op">&lt;$</span> resetClickE</a></code></pre></div>
+<p>If you aren't used to mtl style programming, this can be a little daunting. We have some monadic computational context <code>m</code> that can both build dom and dispatch events of type (Endo Int). This sub components don't have any idea of the concrete type, so that is up to the caller to decide to pick a context that can satisfy all of the constraints of the children.</p>
+<p>We can choose a concrete type and also peel a layer off with runEventWriterT.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">  (_,updatesE) <span class="ot">&lt;-</span> runEventWriterT <span class="op">$</span> <span class="kw">do</span> <span class="co">-- Because we call runEventWriterT here, this do block has the</span></a>
+<a class="sourceLine" id="cb8-2" title="2">    addButton1                         <span class="co">-- type EventWriterT t (Endo Int) m a</span></a>
+<a class="sourceLine" id="cb8-3" title="3">    resetButton1                       <span class="co">-- so the result is m ((),Event t (Endo t Int))</span></a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5">  clickCountDyn <span class="ot">&lt;-</span> foldDyn appEndo <span class="dv">0</span> updatesE</a>
+<a class="sourceLine" id="cb8-6" title="6">  text <span class="st">&quot; &quot;</span></a>
+<a class="sourceLine" id="cb8-7" title="7">  display clickCountDyn</a></code></pre></div>
+<p>Now lets say if we want to change the reset button so that it is disabled if the count is 0. We can add a MonadReader constraint to the resetButton widget so that it can subscribe to changes in the count.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">resetButton2</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ot">  ::</span> ( <span class="dt">DomBuilder</span> t m, <span class="dt">EventWriter</span> t (<span class="dt">Endo</span> <span class="dt">Int</span>) m</a>
+<a class="sourceLine" id="cb9-3" title="3">     , <span class="dt">MonadReader</span> (<span class="dt">Dynamic</span> t <span class="dt">Int</span>) m , <span class="dt">PostBuild</span> t m)</a>
+<a class="sourceLine" id="cb9-4" title="4">  <span class="ot">=&gt;</span> m ()</a>
+<a class="sourceLine" id="cb9-5" title="5">resetButton <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-6" title="6">  clickCountDyn <span class="ot">&lt;-</span> ask                                    <span class="co">-- The type of this is m (Dynamic t Int)</span></a>
+<a class="sourceLine" id="cb9-7" title="7">  <span class="kw">let</span> disabledDyn <span class="ot">=</span> (<span class="op">==</span> <span class="dv">0</span>) <span class="op">&lt;$&gt;</span> clickCountDyn              <span class="co">-- We map over it to turn it to a boolean</span></a>
+<a class="sourceLine" id="cb9-8" title="8">  resetClickE <span class="ot">&lt;-</span> buttonDynDisabled disabledDyn <span class="st">&quot;Reset me&quot;</span> <span class="co">-- And we pass that disabled dynamic into a sub widget</span></a>
+<a class="sourceLine" id="cb9-9" title="9">  tellEvent <span class="op">$</span> <span class="dt">Endo</span> (<span class="fu">const</span> <span class="dv">0</span>) <span class="op">&lt;$</span> resetClickE               <span class="co">-- And do our usual tellEvent</span></a></code></pre></div>
+<p>The coolest thing about this is that addButton doesn't need to change because it only depends on the constraints that it needs rather than a concrete type. This makes our widgets much more modular.</p>
+<p>We wire this up in a recursive do block so that we can feed the dynamic that we create later into the running of the readerT.</p>
+<h3 id="sidebar-recursivedo--rec--mdo--monadfix">Sidebar: RecursiveDo / rec / mdo / MonadFix</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  rec (_,updatesE) <span class="ot">&lt;-</span> <span class="co">-- Rec allows us to reference clickCountDyn when running the reader</span></a>
+<a class="sourceLine" id="cb10-2" title="2">        <span class="fu">flip</span> runReaderT clickCountDyn</a>
+<a class="sourceLine" id="cb10-3" title="3">        <span class="op">.</span> runEventWriterT</a>
+<a class="sourceLine" id="cb10-4" title="4">        <span class="op">$</span> <span class="kw">do</span>             <span class="co">-- Because we call runEventWriterT and runReaderT here, this do block has the</span></a>
+<a class="sourceLine" id="cb10-5" title="5">          addButton      <span class="co">-- type ReaderT (Dynamic t Int) (EventWriterT t (Endo Int) m) a</span></a>
+<a class="sourceLine" id="cb10-6" title="6">          resetButton2   <span class="co">-- so the result after the runs is m ((),Event t (Endo t Int))</span></a>
+<a class="sourceLine" id="cb10-7" title="7">      clickCountDyn <span class="ot">&lt;-</span> foldDyn appEndo <span class="dv">0</span> updatesE</a>
+<a class="sourceLine" id="cb10-8" title="8">  text <span class="st">&quot; &quot;</span></a>
+<a class="sourceLine" id="cb10-9" title="9">  display clickCountDyn</a></code></pre></div>
+<p>The the variables that are defined in the rec can have cycles, but are still defined at the same level as the display. It's good to keep the rec blocks as small as is possible so that causality loops (FRP infinite loops) are easier to spot and fix.</p>
+<p>Using rec or mdo forces that context to have MonadFix (the abstraction used to tie the knot in the cycle). Doco about the syntax can be found <a href="https://wiki.haskell.org/MonadFix">on the haskell wiki</a>.</p>
+<h3 id="el-elclass-eldynclass-elattr-eldynattr">el, elClass, elDynClass, elAttr, elDynAttr</h3>
+<p>There are a number of different ways to build elements in reflex dom. The second most general way is:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1">elDynAttr&#39;</a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="ot">  ::</span> (<span class="dt">DomBuilder</span> t m, <span class="dt">PostBuild</span> t m) <span class="ot">=&gt;</span></a>
+<a class="sourceLine" id="cb11-3" title="3">     <span class="dt">Text</span>                                                  <span class="co">-- ElementName</span></a>
+<a class="sourceLine" id="cb11-4" title="4">     <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> t (<span class="dt">Data.Map.Internal.Map</span> <span class="dt">Text</span> <span class="dt">Text</span>)        <span class="co">-- Dynamic t Map for all attributes</span></a>
+<a class="sourceLine" id="cb11-5" title="5">     <span class="ot">-&gt;</span> m a                                                <span class="co">-- Child element builder</span></a>
+<a class="sourceLine" id="cb11-6" title="6">     <span class="ot">-&gt;</span> m (<span class="dt">Element</span> <span class="dt">EventResult</span> (<span class="dt">DomBuilderSpace</span> m) t, a)   <span class="co">-- Returns the dom elt and the result of the builder</span></a></code></pre></div>
+<p>See the <a href="../docs/ReflexDomQuickref.html">reflex-dom Quickref</a> for more info.</p>
+<p>But to make a button which takes a Dynamic t Bool that is used to mark the button as disabled, then you'd do the following to translate the bool to a map where disabled is present if the dynamic is true:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">buttonDynDisabled</a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="ot">  ::</span> (<span class="dt">DomBuilder</span> t m, <span class="dt">PostBuild</span> t m)</a>
+<a class="sourceLine" id="cb12-3" title="3">  <span class="ot">=&gt;</span> <span class="dt">Dynamic</span> t <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb12-4" title="4">  <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb12-5" title="5">  <span class="ot">-&gt;</span> m (<span class="dt">Event</span> t ())</a>
+<a class="sourceLine" id="cb12-6" title="6">buttonDynDisabled disabledDyn dt <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb12-7" title="7">  (buttElt,_) <span class="ot">&lt;-</span> elDynAttr&#39; <span class="st">&quot;button&quot;</span></a>
+<a class="sourceLine" id="cb12-8" title="8">    (bool Map.empty (<span class="st">&quot;disabled&quot;</span> <span class="op">=:</span> <span class="st">&quot;&quot;</span>) <span class="op">&lt;$&gt;</span> disabledDyn)</a>
+<a class="sourceLine" id="cb12-9" title="9">    (text dt)</a>
+<a class="sourceLine" id="cb12-10" title="10">  <span class="fu">pure</span> <span class="op">$</span> domEvent <span class="dt">Click</span> buttElt</a></code></pre></div>
+<h2 id="next-page">Next Page</h2>
+<p><a href="./02-login.html">02-login</a></p>
+</body>
+</html>

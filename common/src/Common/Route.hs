@@ -37,6 +37,7 @@ data FrontendRoute :: * -> * where
   FrontendRoute_Editor :: FrontendRoute (Maybe DocumentSlug)
   FrontendRoute_Article :: FrontendRoute DocumentSlug
   FrontendRoute_Profile :: FrontendRoute (Username, Maybe (R ProfileRoute))
+  FrontendRoute_Warmup :: FrontendRoute ()
   -- This type is used to define frontend routes, i.e. ones for which the backend will serve the frontend.
 
 data ProfileRoute :: * -> * where
@@ -60,6 +61,7 @@ backendRouteEncoder = handleEncoder (const (InL BackendRoute_Missing :/ ())) $
         let profileRouteEncoder = pathComponentEncoder $ \case
               ProfileRoute_Favourites -> PathSegment "favourites" $ unitEncoder mempty
         in ( pathSegmentEncoder . bimap unwrappedEncoder (maybeEncoder (unitEncoder mempty) profileRouteEncoder ) )
+      FrontendRoute_Warmup -> PathSegment "warmup" $ unitEncoder mempty
 
 getAppRoute :: MonadIO m => m Text
 getAppRoute = do

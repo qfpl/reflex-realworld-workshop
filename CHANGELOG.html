@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>CHANGELOG.html</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+</head>
+
+<body>
+
+[WARNING] This document format requires a nonempty <title> element.
+  Please specify either 'title' or 'pagetitle' in the metadata,
+  e.g. by using --metadata pagetitle="..." on the command line.
+  Falling back to 'Untitled'
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Untitled</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="./github-pandoc.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="changelog">Changelog</h1>
+<p>All changes to the workshop will be documented here with instructions for how you should update local code / vms when upgrading.</p>
+<p>For each new version, there will also be a github release: so please watch this repo for new releases if you are keen to be notified! :)</p>
+<h2 id="version-0101---2019-05-13-0200">Version 0.1.0.1 - 2019-05-13-02:00</h2>
+<p>Just finalised some code changes to example that will get us to the end of the workshop.</p>
+<p>Adds tag loading to the home page and selecting feed/global.</p>
+<p>Adds some test data in that makes it a bit easier to test the feed and tags.</p>
+<p>Workshop instructions should come this evening. Just tidying it all off still. :)</p>
+<h3 id="upgrade-instructions">Upgrade instructions</h3>
+<ul>
+<li>If you are on the VM and have already downloaded it, please:
+<ul>
+<li>Do a git pull in the ~/reflex-realworld-workshop directory</li>
+<li>To update the DB to the latest schema: <code>psql -h localhost -U conduit -c "DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;" &amp;&amp; psql -h localhost -U conduit conduit -f ~/reflex-realworld-workshop/devenv/common/dbdump.sql</code></li>
+<li><code>ob run</code> in both ~/reflex-realworld-workshop and ~/reflex-realworld-workshop/reflex-realword-example`</li>
+<li>If the update worked, on <a href="http://localhost:8000">http://localhost:8000</a> you should see tags in the list of "being cool" and "parties" and clicking on them should filter the list down to a single article.</li>
+</ul></li>
+<li>If you are using to docker setup):
+<ul>
+<li>git pull in your local checkout</li>
+<li>devenv/docker/ob stop</li>
+<li><code>docker pull benkolera/reflex-realworld-workshop-pg:0.1.0</code></li>
+<li>devenv/docker/ob run-example</li>
+<li>If the update worked, on <a href="http://localhost:8000">http://localhost:8000</a> you should see tags in the list of "being cool" and "parties" and clicking on them should filter the list down to a single article.</li>
+</ul></li>
+<li>If you are using nix/NixOS:
+<ul>
+<li>git pull in your checkout</li>
+<li>If you are using the docker database:
+<ul>
+<li>devenv/docker/ob stop</li>
+<li><code>docker pull benkolera/reflex-realworld-workshop-pg:0.1.0</code></li>
+<li>Run the database again</li>
+</ul></li>
+<li>If you have a local postgres DB:
+<ul>
+<li><code>psql -h localhost -U conduit -c "DROP SCHEMA PUBLIC CASCADE; CREATE SCHEMA PUBLIC;" &amp;&amp; psql -h localhost -U conduit conduit -f ~/reflex-realworld-workshop/devenv/common/dbdump.sql</code></li>
+</ul></li>
+<li>ob run in the example subfolder.</li>
+<li>If the update worked, on <a href="http://localhost:8000">http://localhost:8000</a> you should see tags in the list of "being cool" and "parties" and clicking on them should filter the list down to a single article.</li>
+</ul></li>
+</ul>
+<h2 id="version-010---2019-05-08">Version 0.1.0 - 2019-05-08</h2>
+<p>This is the first release without any content. This is the skeleton of the code and all the dependencies. If you follow the <a href="./SETUP.html">setup instruction</a> to a clean ob run, then it should just be a git pull later to get the exercises and it should just work without any big rebuilds or waits.</p>
+<ul>
+<li>Released initial version</li>
+</ul>
+</body>
+</html>
+
+</body>
+</html>

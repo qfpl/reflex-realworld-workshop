@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Workshop Docs</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="file:///home/bkolera/src/github/qfpl/reflex-realworld-workshop/docs.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="workshop-introduction">Workshop introduction</h1>
+<p>In this workshop, we'll be implementing the <a href="https://github.com/gothinkster/realworld">Realworld / Conduit</a> (no relation to the haskell streaming library) spec inside an <a href="https://github.com/obsidiansystems/obelisk/">obelisk</a> application. The reason why the realworld app is so interesting is that it actually has backend calls, auth, etc to give us a good idea of how a more substantial reflex-dom application can work. Right now, the example apps that are around are fairly simple and it is difficult to make the leap from examples to something like conduit.</p>
+<p>This workshop intends to jump you ahead to demonstrate how you way structure a bigger reflex app. You will be missing fundamentals that may make things tricky, but the aim is to give you just enough of a taste test for you to motivate you to learn the fundamentals and anchor it to frontend concepts that you already know. David Laing's <a href="https://github.com/qfpl/reflex-workshop">workshop</a> is a very good resource for learning the fundamentals, and you will almost certainly need to go back and do it after this workshop if you haven't already.</p>
+<p>It's worth saying out loud that the jump from FP to FRP is almost a big of a mental leap as imperative programming to FP. Be kind to yourself, and if you get stuck please ask for help and we can talk about it and explain things in a targeted way in the workshop. I am fully expecting us to need to adapt on the day as we start figuring out where the sticky points are.</p>
+<p>The backend is already all prewritten so the workshop will just be implementing the front end. Learning servant and beam is a whole other workshop/course, but the code is all here to peruse if you'd like to later. It should be considered more a learning tool than a best practice.</p>
+<h2 id="reflex-ecosystem">Reflex Ecosystem</h2>
+<p>There are a fair number of moving parts to reflex, so here is a quick map of the territory:</p>
+<ul>
+<li><a href="https://github.com/ghcjs/ghcjs">GHCJs</a> is compiler that will compile GHC haskell into Javascript.</li>
+<li><a href="https://github.com/reflex-frp/reflex">Reflex</a> is the base FRP library that gives us Events, Behaviours and Dynamics</li>
+<li><a href="https://github.com/reflex-frp/reflex-dom">Reflex DOM</a> is a html frontend library written on top of reflex</li>
+<li><a href="https://github.com/reflex-frp/reflex-platform">Reflex Platform</a> is a bunch of nix, java and objective C to be able to build web/iOS/Android apps with reflex DOM. This uses a webview on mobile, much like react native. But it runs most of the code in native compilation from GHC and very minimal JS: much how the jsaddle-warp test setup works.</li>
+<li><a href="https://github.com/obsidiansystems/obelisk/">Obelisk</a> Is an opinionated framework that sits on top of platform, adding routing, server side rendering, static files, an out of the box ghcid based compile live recompilation and deployment.</li>
+<li>Jsaddle is the thing that gets used when you <code>ob run</code>. Instead of compiling to JS, most of the code is run in the native haskell runtime and commands are streamed over a websocket to interact with Javascript.</li>
+</ul>
+<h2 id="what-you-should-have-already">What you should have already</h2>
+<p>You should have followed the instructions in the <a href="../SETUP.html">Setup Page</a>. This should give you:</p>
+<ul>
+<li>A blank looking site on <a href="http://localhost:8001">http://localhost:8001</a> . This should live recompile when you change the workshop code.</li>
+<li>An example app on <a href="http://localhost:8000">http://localhost:8000</a> that is running my implementation. This is talking to the same DB, so you should be able to test them side by side.</li>
+<li>A hoogle server at <a href="http://localhost:8080">http://localhost:8080</a> . This will be very handy. Just note that if you aren't using the VM, the reflex docs are actually linked via file links that the browser wont open for you. Copy the link address and paste it in a new tab. The VM has a hacky chromium plugin that disables this security feature, but I would not recommend installing that on your actual machine</li>
+</ul>
+<p><strong>note</strong>: The Jsaddle stuff only works in chromium, so you'll need that when you're developing. Install instructions should have covered that, but in case you missed it.</p>
+<h2 id="how-to-progress-through-these-exercises">How to progress through these exercises</h2>
+<ul>
+<li>Do them in order as per the filename numbering.</li>
+<li>Given that this is a taste test rather than making you experts in 1.5 hours, don't feel like you're cheating by taking a peek at the example app to progress. It's much more important to get the full taste than get bogged down. You can always revisit later after doing Dave's course.</li>
+<li>Consult both quickrefs as they are invaluable.
+<ul>
+<li>reflex: <a href="https://github.com/reflex-frp/reflex/blob/develop/Quickref.md">Internet Copy</a> <a href="../docs/ReflexQuickref.html">LocalCopy</a></li>
+<li>reflex-dom: <a href="https://github.com/reflex-frp/reflex-dom/blob/develop/Quickref.md">Internet Copy</a> <a href="../docs/ReflexDomQuickref.html">LocalCopy</a></li>
+<li>And consult hoogle to search for docs for functions that you see: <a href="http://localhost:8080">http://localhost:8080</a>. If you are not using the vm, just be careful about the absolute file links that don't work/</li>
+<li>Use type holes by putting in an _ for an expression that you don't know how to write. Them follow the types via hoogle and the quickrefs.</li>
+</ul></li>
+</ul>
+<h2 id="overly-ambitious-basic-workshop-outline">Overly ambitious Basic Workshop Outline</h2>
+<ul>
+<li>5 Mins: Welcome, orientation and getting people setup</li>
+<li>15 Mins: Review <a href="./01-foldDyn.html">foldDyn and mtl style</a> UI basics. This is what the talk covered. Ask lots of questions if you need.</li>
+<li>10 Mins: <a href="./02-login.html">Login Form Exercise</a> where we learn the basics of submitting a form via our client.</li>
+<li>15 Mins: <a href="./03-settings.html">Settings Form Exercise</a> where we have a form that requires data to be loaded first.</li>
+<li>20 Minutes : <a href="./04.home.html">Home page exercise</a> where we learn how to deal with displaying lists and using eventwriter.</li>
+<li>20 Minutes : <a href="./05.article.html">Article Exercise</a> where we do some higher order FRP and get into some interesting state management.</li>
+<li>5 Minutes : Wrap up and questions</li>
+<li>Later: <a href="./??-bonus.html">Bonus Exercises</a> if you want to dig further after the workshop.</li>
+</ul>
+<h2 id="next-page">Next Page</h2>
+<p><a href="./01-foldDyn.html">01-foldDyn</a></p>
+</body>
+</html>
