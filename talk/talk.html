@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>The Reflex Architectur – YLJ 2019</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme">
+    <link rel="stylesheet" href="custom.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>The Reflex Architecture</h1>
+          <img src="images/reflex-logo.svg" style="box-shadow: none; border: none;" width="50%" />
+          <p>
+            <small>Created by Ben Kolera for YOW Lamdba Jam 2019</small>
+          </p>
+        </section>
+        <section>
+            <section>
+                <h2>About me</h2>
+            </section>
+            <section>
+                <p>I work at the Queensland Functional Programming Lab.</p>
+            </section>
+            <section>
+                <p>It's my job to help FP succeed and give local business a competitive advantage with FP</p>
+            </section>
+            <section>
+                <p>I'm a webapp guy on a mission to make full stack haskell dev awesome! :)</p>
+            </section>
+            <section>
+                <p>I love building software that is tangible, pretty and ultimately improves people's lives</p>
+            </section>
+            <section>
+                <p>But it sure is a pain even with the best of breed tools at the moment</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>Enter Reflex</h2>
+            </section>
+            <section>
+                <p>Reflex is an overloaded term that means many things</p>
+            </section>
+            <section>
+                <h2>Reflex</h2>
+                <p class="fragment">The base FRP library</p>
+                <p class="fragment">Gives us a fundamental structure for programming over time varying state.</p>
+                <p class="fragment">Web agnostic!</p>
+            </section>
+            <section>
+                <h2>Reflex DOM</h2>
+                <p class="fragment">A DOM Building framework built on Reflex &amp; GHCJs</p>
+            </section>
+            <section>
+                <h2>Reflex Platform</h2>
+                <p class="fragment">A framework on top of reflex-dom that deploys to browser, iOS and Android</p>
+                <p class="fragment">A bit like react native</p>
+            </section>
+            <section>
+                <h2>Obelisk</h2>
+                <p class="fragment">A full stack framework on top of reflex platform</p>
+                <p class="fragment">Batteries included: Server side rendering, routing, deployments...</p>
+                <p class="fragment">If you are learning reflex, it is best to start here</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>Why should you care?</h2>
+            </section>
+            <section>
+                <p>UIs are Hard</p>
+            </section>
+            <section>
+                <p>Ofter tangled messes of time varying state</p>
+            </section>
+            <section>
+                <p>Out best of breed tools centralise state</p>
+            </section>
+            <section>
+                <p>But this feels antimodular and makes me want something better</p>
+            </section>
+            <section>
+                <p>FRP gives us a fundamental way model time varying state into the essense of our programs</p>
+            </section>
+            <section>
+                <p>And this fundamental jump seems critical for us as our programs become more and more distributed</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>But ...</h2>
+            </section>
+            <section>
+                <p>FRP is hard to learn</p>
+            </section>
+            <section>
+                <p>Like the jump from Imperative -> FP</p>
+            </section>
+            <section>
+                <p>It's hard to see how it relates to your apps when you are learning fundamentals</p>
+            </section>
+            <section>
+                <h3>Talk Goals</h3>
+            </section>
+            <section>
+                <p>Skip you ahead a bit so you can see how a non-toy reflex app looks</p>
+            </section>
+            <section>
+                <p>Ground reflex in a familar setting and language</p>
+            </section>
+            <section>
+                <p>To motivate you to play further and learn the fundamentals</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>foldDyn</h2>
+            </section>
+            <section>
+                <p>The reducer of the reflex world</p>
+            </section>
+            <section>
+                <img src="../workshop/01-foldDyn/foldDyn.png" />
+            </section>
+            <section>
+                <img src="../workshop/01-foldDyn/counter.png" />
+                <pre><code class="hljs haskell" data-trim>
+exFoldDyn = do
+  buttonClickE :: Event t () <- button "Click me"
+  let reducer _ old = old + 1
+  clickCountDyn :: Dynamic t Int <- foldDyn reducer 0 addE
+  text " Clicked: "
+  display clickCountDyn
+  text " times!"
+                </code></pre>
+            </section>
+            <section>
+                <h3>Events can Merge</h3>
+            </section>
+            <section>
+                <pre><code class="hljs haskell" data-trim>
+> import Data.Monoid.Endo
+> let idEndo  = mempty :: Endo Int
+> let incEndo = Endo $ (+ (1::Int))
+> appEndo idEndo 5
+5
+> appEndo incEndo 5
+6
+> appEndo (fold [incEndo, incEndo]) 5
+7
+                </code></pre>
+            </section>
+            <section>
+                <img src="../workshop/01-foldDyn/merge.png" />
+                <pre><code class="hljs haskell" data-trim>
+let addE     = Endo (+1)      <$ addClickE
+let resetE   = Endo (const 0) <$ resetClickE
+let updatesE = addE <> resetE :: Event t (Endo Int)
+
+clickCountDyn <- foldDyn appEndo 0 updatesE
+                </code></pre>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>MTL Style Redux</h2>
+            </section>
+            <section>
+                <p>Redux apps are tidy because the dispatcher and subscriptions</p>
+            </section>
+            <section>
+                <p>Not having to bubble events manually and pass state down makes refactoring and reuse easier</p>
+            </section>
+            <section>
+                <h3>EventWriter</h3>
+                <p class="fragment">Reflex analog to dispatcher</p>
+            </section>
+            <section>
+             <pre><code class="hljs haskell" data-trim>
+addButton :: (DomBuilder t m, EventWriter t (Endo Int) m) => m ()
+addButton = do
+  addClickE   <- button "Click me"
+  tellEvent $ Endo (+1) <$ addClickE
+
+resetButton :: (DomBuilder t m, EventWriter t (Endo Int) m) => m ()
+resetButton = do
+  resetClickE <- button "Reset me"
+  tellEvent $ Endo (const 0) <$ resetClickE
+                </code></pre>
+            </section>
+            <section>
+                <pre><code class="hljs haskell" data-trim>
+(_,updatesE) <- runEventWriterT $ do -- Because we call runEventWriterT here, this do block has the
+addButton1                         -- type EventWriterT t (Endo Int) m a
+resetButton1                       -- so the result is m ((),Event t (Endo t Int))
+
+clickCountDyn <- foldDyn appEndo 0 updatesE
+                </code></pre>
+            </section>
+            <section>
+                <h3>ReaderT</h3>
+                <p class="fragment">Analogue to Subscriptions</p>
+            </section>
+            <section>
+                <pre><code class="hljs haskell" data-trim>
+resetButton2
+  :: ( DomBuilder t m, EventWriter t (Endo Int) m
+     , MonadReader (Dynamic t Int) m , PostBuild t m)
+  => m ()
+resetButton = do
+  clickCountDyn <- ask                                    -- The type of clickCountDyn is m (Dynamic t Int)
+  let disabledDyn = (== 0) <$> clickCountDyn              -- We map over it to turn it to a boolean
+  resetClickE <- buttonDynDisabled disabledDyn "Reset me" -- And we pass that disabled dynamic into a sub widget
+  tellEvent $ Endo (const 0) <$ resetClickE               -- And do our usual tellEvent
+                </code></pre>
+            </section>
+            <section>
+            <pre><code class="hljs haskell" data-trim>
+            rec (_,updatesE) <- -- Rec allows us to reference clickCountDyn when running the reader
+            flip runReaderT clickCountDyn
+            . runEventWriterT
+            $ do             -- Because we call runEventWriterT and runReaderT here, this do block has the
+            addButton      -- type ReaderT (Dynamic t Int) (EventWriterT t (Endo Int) m) a
+            resetButton2   -- so the result after the runs is m ((),Event t (Endo t Int))
+            clickCountDyn <- foldDyn appEndo 0 updatesE
+            </code></pre>
+            </section>
+            <section>
+                <p>These abstractions are classy mtl friendly, too.</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>And there's lots more in reflex!</h2>
+            </section>
+            <section>
+                <p>But we'll stick mainly to these familiar basics in the workshop. We only have 1.5 hours!</p>
+            </section>
+            <section>
+                <p>You wont leave an expert, but hopefully you have fun and get motivated to learn more.</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h2>The Workshop</h2>
+            </section>
+            <section>
+                <p>A series of exercises implementing the realworld/conduit demo app</p>
+            </section>
+            <section>
+                <p>This app has backend calls, auth, routing and lots of goodies</p>
+            </section>
+            <section>
+                <p>Right after lunch!</p>
+            </section>
+            <section>
+                <p>You will need a laptop and functioning Nix/Obelisk setup</p>
+            </section>
+            <section>
+                <p>Setup instructions are linked in the program</p>
+            </section>
+            <section>
+                <p>You will need a laptop and functioning Nix/Obelisk setup.</p>
+            </section>
+            <section>
+                <p>I have USB sticks with a virtual box ova and a docker image</p>
+            </section>
+            <section>
+                <p>I'll be setup in the room over lunch if you need help</p>
+            </section>
+        </section>
+        <section style="text-align: left;">
+          <h1>THE END</h1>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="reveal.js/lib/js/head.min.js"></script>
+    <script src="reveal.js/js/reveal.js"></script>
+
+    <script>
+
+      // More info https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // More info https://github.com/hakimel/reveal.js#dependencies
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'reveal.js/plugin/search/search.js', async: true },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>

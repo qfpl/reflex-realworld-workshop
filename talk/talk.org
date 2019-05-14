@@ -1,0 +1,174 @@
+#+REVEAL_TRANS: default
+#+REVEAL_THEME: simple
+#+Title: The Reflex Architecture
+#+Author: Ben Kolera
+#+Email: @benkolera
+#+REVEAL_ROOT: ./reveal.js/
+#+REVEAL_PLUGINS: (highlight notes)
+#+REVEAL_EXTRA_CSS:custom.css
+#+REVEAL_WIDTH: 1920
+#+REVEAL_HEIGHT: 1080
+
+* The Reflex Architecture
+  #+REVEAL_HTML: <img style="border: none; box-shadow: none;" width="50%" src="./images/reflex-logo.svg" />
+  Ben Kolera, YOW Lambda Jam 2019
+* Talk Motivations
+** Whirlwind Tour
+   #+ATTR_REVEAL: :frag (appear)
+   - This won't make you a reflex expert!
+   - Dave's course starts that journey. Do that instead!
+** UIs are really hard
+   #+ATTR_REVEAL: :frag (appear)
+   - Often tangled webs of time varying state.
+   - UIs needs the F(R)P hammer the most.
+   - Elm / redux don't give me the abstraction power that I want.
+   - Reflex is pretty close!
+** Motivate you to learn
+   #+ATTR_REVEAL: :frag (appear)
+   - Reflex is awesome, but it takes time to learn.
+   - Like the jump from Imperative -> FP
+   - Hope to motivate people to learn and play now.
+   - I want you to come on the journey with me so we can build awesome stuff
+** Present it in a familiar UI way
+   #+ATTR_REVEAL: :frag (appear)
+   - We'll explore reflex via the 'real world' app demo
+   - Drawing parallels to TEA/Redux where possible
+** Test out my YLJ Talk
+   #+ATTR_REVEAL: :frag (appear)
+   - I want to propose this to YLJ, but unsure if it'll fit in 25 mins.
+   - Feel free to tell me what sucked afterwards so I can make it YLJ worthy!
+   - This will definitely not be 25 mins. :)
+* The Reflex Ecosystem
+** Reflex (The base lib)
+*** FRP : Models time varying state
+    #+ATTR_REVEAL: :frag (appear)
+    - Behaviours: Continuous value over time
+    - Events: A value that only occurs at discrete points in time.
+    - Dynamics: The pairing of behaviour and event (a continuous value that notifies you when it changes)
+*** Higher Order FRP
+    (Our graph isn't static and get rewired on the fly)
+*** Manage Side Effects
+    #+ATTR_REVEAL: :frag (appear)
+    - Do side effects when building the FRP network
+    - Also when events fire
+    - Allows us to sync the FRP changes to the outside world.
+*** Frames
+    #+ATTR_REVEAL: :frag (appear)
+    - Transaction for each external event
+    - Side effects are batched till the new values have been computed
+    - No 'glitches' where partial state is drawn to the UI.
+** Reflex DOM
+   - A way to build web UIs with reflex on top of GHCJs.
+   #+INCLUDE: "./code/frontend/src/Frontend/ExDom.hs" :lines "9-" src haskell
+   #+REVEAL_HTML: <iframe src="http://localhost:8001/dom" width="700px" height="30px"></iframe>
+*** No Virtual DOM
+    #+ATTR_REVEAL: :frag (appear)
+    - We patch the DOM using the state/effect management of FRP.
+    - This is less of a lie and works better
+    - But you have to think more.
+** Reflex Platform
+    #+ATTR_REVEAL: :frag (appear)
+   - A mobile + web UI framework for reflex-dom
+   - Webview based UI / not native components
+   - Mobile stuff still fairly new and with limited APIs.
+** Obelisk
+    #+ATTR_REVEAL: :frag (appear)
+   - Full stack platform that builds on reflex-platform
+   - Adds server side prerendering, routing (frontend), static resources, etc
+   - The code that we're looking at today is written in obelisk.
+* FoldDyn
+  The reducer / update of the Redux / Elm world.
+** Just like a reducer / update
+   Events drive state change just like Elm/Redux.
+
+  #+INCLUDE: "./code/frontend/src/Frontend/ExFoldDyn.hs" :lines "10-" src haskell
+  #+REVEAL_HTML: <iframe src="http://localhost:8001/fold_dyn" width="700px" height="60px"></iframe>
+** Events Compose
+  (If the inner data is a semigroup.)
+
+  #+INCLUDE: "./code/frontend/src/Frontend/ExMergeEvents.hs" :lines "10-" src haskell
+  #+REVEAL_HTML: <iframe src="http://localhost:8001/merge_events" width="700px" height="60px"></iframe>
+* MTL Style TEA
+** EventWriter
+  #+INCLUDE: "./code/frontend/src/Frontend/ExEventWriter.hs" :lines "11-" src haskell
+  #+REVEAL_HTML: <iframe src="http://localhost:8001/event_writer" width="700px" height="60px"></iframe>
+
+** ReaderT (Dynamic t)
+  #+INCLUDE: "./code/frontend/src/Frontend/ExReader.hs" :lines "17-" src haskell
+  #+REVEAL_HTML: <iframe src="http://localhost:8001/reader" width="700px" height="60px"></iframe>
+** Obelisk Routing
+  #+INCLUDE: "./code/frontend/src/Frontend/ExRoutes.hs" :lines "17-" src haskell
+  #+REVEAL_HTML: <iframe src="http://localhost:8001/routes" width="700px" height="90px"></iframe>
+* Dig Into RealWorld
+** Login Page
+   - Show basic form
+   - A backend call from the form data
+   - Setting the logged in state & redirecting when done
+** Settings Page
+   - Same as before, but preloading the data beforehand
+   - Note that we hook into postBuild for an OnLoad event
+** ArticleList
+   - We see loading some stuff
+   - Doing a list of things
+** Article
+   - We see loading some stuff
+   - The awesomeness of having pandoc in the browser
+   - In the comments, we see the success updating the UI state.
+   - Notice the holdUniqDyn. Lets talk about why this is useful
+** Unravel State
+   - The gnarliest bit. We may skip this if people are bored/tired.
+** Missing pieces
+   - Error Handling
+   - Optimistic updates
+* Other Abstractions
+** Incremental
+   #+ATTR_REVEAL: :frag (appear)
+   - Incremental is like dynamic, but allows patching bits of it.
+   - This means less updates of things listening to changes.
+** Workflow
+  #+INCLUDE: "./code/frontend/src/Frontend/ExWorkflow.hs" :lines "13-" src haskell
+  #+REVEAL_HTML: <iframe src="http://localhost:8001/workflow" width="700px" height="60px"></iframe>
+** Rhyolite
+   #+ATTR_REVEAL: :frag (appear)
+   - A relay like thing
+   - Subscribes ui components to backend state
+   - Subscriptions compose together like graphql / RequesterT
+   - Updates streamed to UI over websockets for instant auto UI updates.
+* Wrap Up
+** Less Afraid of State
+   #+ATTR_REVEAL: :frag (appear)
+   - Easy to wire events and state through levels
+   - All time varying state exists in Dynamics / Events
+   - Type sigs can be specific to the exact needs of the widget
+   - Less need to centralise state and easier to compose UI widgets
+** Pitfalls
+   #+ATTR_REVEAL: :frag (appear)
+   - New: you have to figure stuff out for yourself
+   - New: you may have to write new things
+   - There's some advanced haskell at play
+   - Thinking in FRP is a slow learned skill. Less imperative than FP!!
+   - Decentralising state isn't as simple
+   - But you have the tools to make it awesome.
+* Reading & Resources
+** IRC (Freenode)
+   #+ATTR_REVEAL: :frag (appear)
+   - #reflex-frp
+   - #qfpl
+** Docs
+   #+ATTR_REVEAL: :frag (appear)
+  - Reflex Quickref: https://github.com/reflex-frp/reflex/blob/develop/Quickref.md
+  - Reflex-Dom Quickref: https://github.com/reflex-frp/reflex/blob/develop/Quickref.md
+  - Reflex Docs: http://docs.reflex-frp.org/en/latest/reflex_docs.html
+** Talks
+   #+ATTR_REVEAL: :frag (appear)
+  - Real World Reflex by Doug Beardsley (mightybyte):
+    - Slides: https://github.com/mightybyte/real-world-reflex/blob/master/index.md
+    - Video: https://www.youtube.com/watch?v=dNBUDAU9sv4
+  - Ryan Trinkle - Full-stack Haskell from Prototype to Production: https://www.youtube.com/watch?v=riJuXDIUMA0&app=desktop
+** Example Code
+   #+ATTR_REVEAL: :frag (appear)
+  - Reflex Examples: https://github.com/reflex-frp/reflex-examples
+  - Reflex TodoMVC: https://github.com/reflex-frp/reflex-todomvc
+  - Reflex Real World Code: https://github.com/qfpl/reflex-realworld-example
+* Thanks!
+#+REVEAL_HTML: <small><a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.</small>
