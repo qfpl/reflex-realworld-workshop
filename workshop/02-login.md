@@ -45,7 +45,7 @@ is a collection of various dynamics about the current state of the text field.
 For example, there is a dynamic about whether the field currently have focus but
 importantly for us, a `Dynamic` which indicates the current input in the field.
 
-1. Use `_inputElement_value` to extract the `Dynamic t Text` which reports the
+* Use `_inputElement_value` to extract the `Dynamic t Text` which reports the
    current state of the email and password fields.
 
 Hint: `_emailI :: InputElement er d t`
@@ -70,20 +70,20 @@ liftA3 @(Dynamic _)
 -- ... etc
 ```
 
-2. Combine together the password and email dynamics to create a `Dynamic t Credentials`. Call this new value `credD`.
+* Combine together the password and email dynamics to create a `Dynamic t Credentials`. Call this new value `credD`.
 
 After creating the `Dynamic` containing the credentials we still have to turn
 it into a `Dynamic t (Namespace "user" Credentials)`. Thankfully, this is
 easy by mapping `Namespace` over `credD`.
 
-3. Modify `credD` by mapping the `Namespace` constructor using `Functor`.
+* Modify `credD` by mapping the `Namespace` constructor using `Functor`.
 
 At this point you should have a `Dynamic t (Namespace "user" Credentials)`
 which will contain the values that the user input into the form.
 
 ## Calling Client.login
 
-4. Call `Client.login` with `credD` and `_submitE`
+* Call `Client.login` with `credD` and `_submitE`
 
 Now when the submit button is pressed, the `Client.login` function will attempt
 to perform a login with the values currently in the form.
@@ -113,7 +113,7 @@ The `AsFrontendEvent` class means that we don't depend on a concrete event type 
      Common.Conduit.Api.User.Account.Account -> t
 ```
 
-5. Replace `never` in the call to `tellEvent` with the event which fires on a successful account login (returned by `Client.login`)
+* Replace `never` in the call to `tellEvent` with the event which fires on a successful account login (returned by `Client.login`)
 
 Hint: You will need to use `unNamespace` in order to remove the `Namespace` wrapper.
 
@@ -136,7 +136,7 @@ noUserWidget
   -> m ()
 ```
 
-6. Wrap `noUserWidget` around the entire login page.
+* Wrap `noUserWidget` around the entire login page.
 
 Refresh the page. You should get redirected to the home page. If you manually clear storage, you should be able to navigate to http://localhost:8001/login again. Then once the login call succeeds you should get redirected immediately.
 
