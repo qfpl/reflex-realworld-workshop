@@ -301,10 +301,55 @@ specific page.
       FrontendRoute_Warmup   -> warmup
 ```
 
-
 ### Constructing routes
 
-### Using `setRoute`s
+The final topic we will cover in this tutorial is how to construct routes
+and create redirects. If we recall from the previous section the current
+route is simply help in a `Dyanamic`, so setting the current route amounts to
+creating an `Event`, connecting it to the `Dynamic` and firing the event to
+update the route. Firstly though we need to know the correct way to
+construct a route.
+
+Say for example I want to redirect the user to the page `//articles/nearly-at-the-end`, what will the route look like?
+
+Routes are constructed directly using the data type defined in `common`.
+
+```
+FrontendRoute_Article :/ DocumentSlug "nearly-at-the-end"
+```
+
+Each segment of the route is separated by the `:/` combinator.
+
+```
+(:/) :: f a -> a -> R f
+```
+
+If we recall from earlier the definition of `R = DSum f Identity`, it makes
+sense that `:/` is in fact a pattern synonym for the `DSum` constructor.
+
+```
+pattern (:/) :: f a -> a -> R f
+pattern a :/ b = a :=> Identity b
+```
+
+### Using `setRoute`
+
+The ability to set the route of the context is already abstracted over by
+the class `SetRoute`. The `SetRoute` constraint is provided by the super
+`ObeliskWidget` constraint which means that you can call it anywhere in the application. Therefore performing a redirect is as easy as calling `setRoute` on 
+a suitable event.
+
+This redirection is from the editor and redirects the page to the article 
+after you are done editing. The `successE` event fires when the
+server reports that the article has been saved so when that fires, the redirect
+will happen.
+
+```
+setRoute $
+    (\a -> FrontendRoute_Article :/ (DocumentSlug (Article.slug a)))
+    . unNamespace
+    <$> successE
+```
 
 
 
