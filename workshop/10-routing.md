@@ -189,20 +189,118 @@ composition operator from `Control.Category`. `Encoder`s can be composed using t
     -> Encoder check parse a c
 ```
 
-## TODO: What is an `ObeliskRoute`
+## What is an `ObeliskRoute`?
+
+We split our routes up into the backend routes and the frontend routes.
+The backend routes are handled by the backend, the frontend routes by the
+frontend. However, the frontend also needs to handle some additional
+routes which are needed by obelisk to work properly. Therefore the
+encoder that we need to make is a choice of either backend route
+or a wrapped frontend route.
+
+```
+(R (Sum backendRoute (ObeliskRoute route)))
+```
+
+We won't worry about what these routes are for now but you can lift your
+normal encoder with the `obeliskRouteSegment` function which provides
+some sensible defaults.
+
 
 ## Using an `Encoder`
 
 It's all well and good building up this encoder but we need to use it.
 The `encode` and `decode` functions can be used to extract an encoder or decoder from an `Encoder`. The `Encoder` first has to be checked by using `checkEncoder`.
 
+
+### Handling backend routes
+
+The `obelisk-backend` package defines the helper functions to handle backend routes.
+A backend currently only needs two functions to be defined.
+
+```
+data Backend backendRoute frontendRoute = Backend
+  { _backend_routeEncoder :: Encoder (Either Text) Identity (R (Sum backendRoute (ObeliskRoute frontendRoute))) PageName
+  , _backend_run :: ((R backendRoute -> Snap ()) -> IO ()) -> IO ()
+  }
+```
+
+The `routeEncoder` is the `Encoder` that we defined in the `common` module. 
+The `_backend_run` function describes how each route should be handled.
+
+In our simple application there are just two backend routes.
+
+```
+serve $ \case
+    (BackendRoute_Missing :/ ()) -> return ()
+    (BackendRoute_Api     :/ _)  -> 
+        runConduitServerM env $ serveSnapWithContext api context serve
+```
+
+The `serve` function expects a function of type `R backendRoute -> Snap ()` so
+for each route we have to say how to interpret it in the `Snap` monad. The backend for the server is just a normal snap application so the API requests are just
+passed directly to that and missing routes are ignored.
+
+### Handling frontend routes
+
 It order to use the `Encoder` in our applications we pass it to the
 `runFrontend` function. The whole `frontend` of the application
 is parameterised by the permitted routes.
 
-I don't really understand how this bit works yet. There is this `RoutedT` monad which seems to play a role.
+```
+runFrontend :: forall backendRoute route. Encoder Identity Identity (R (Sum backendRoute (ObeliskRoute route))) PageName -> Frontend (R route) -> JSM ()
+```
 
-Likewise, the backend routes need to be handled by the backend. Therefore the Encoder is passed to the backend and something deals with that there. Again, I don't know yet.s
+Notice that the `runFrontend` function only expects the frontend to deal with the
+user routes. It handles the `ObeliskRoute` part of the routes itself.
+
+The way routes are handled by the frontend is slightly more complicated than the backend. The main entry point for the frontend is called `frontend`. It defines
+seperate methods which will draw the header and body of each page.
+
+```
+data Frontend route = Frontend
+  { _frontend_head :: !(forall js t m. ObeliskWidget js t route m => RoutedT t route m ())
+  , _frontend_body :: !(forall js t m. ObeliskWidget js t route m => RoutedT t route m ())
+  }
+```
+
+In order to understand how these deal with routes, you have to understand what the
+point of the `RoutedT` monad is. 
+
+#### RoutedT monad
+
+The best way to think about the `RoutedT` monad is just like a normal `reflex-dom`
+monad but with access to a `Dynamic` which tells you what the current route is. 
+
+The most primitive way to get hold of this dynamic is with `askRoute`.
+
+```
+askRoute :: Routed t r m => m (Dynamic t r)
+```
+
+In our application however we use the less primitive helper function `subRoute_` which has the following type:
+
+```
+subRoute_ :: (...) => (forall a. r a -> RoutedT t a m ()) -> RoutedT t (R r) m () 
+```
+
+So we say for each frontend route in turn how to render it. Each of our pages has 
+it's own function which describes how to render it so the dispatching function
+is a simple mapping from the relevant route to the function which draws the
+specific page.
+
+```
+    pages r = case r of
+      FrontendRoute_Home     -> homePage
+      FrontendRoute_Login    -> login
+      FrontendRoute_Register -> register
+      FrontendRoute_Article  -> article
+      FrontendRoute_Settings -> settings
+      FrontendRoute_Profile  -> pathSegmentSubRoute profile
+      FrontendRoute_Editor   -> editor
+      FrontendRoute_Warmup   -> warmup
+```
+
 
 ### Constructing routes
 
