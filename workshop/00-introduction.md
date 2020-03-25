@@ -1,6 +1,6 @@
 # Workshop introduction
 
-In this workshop, we'll be implementing the [Realworld / Conduit](https://github.com/gothinkster/realworld) (no relation to the haskell streaming library) spec inside an [obelisk](https://github.com/obsidiansystems/obelisk/) application. The reason why the realworld app is so interesting is that it actually has backend calls, auth, etc to give us a good idea of how a more substantial reflex-dom application can work. Right now, the example apps that are around are fairly simple and it is difficult to make the leap from examples to something like conduit.
+In this workshop, we'll be implementing the [Realworld / Conduit](https://github.com/gothinkster/realworld) (no relation to the haskell streaming library) spec inside an [obelisk](https://github.com/obsidiansystems/obelisk/) application. The reason why the realworld app is so interesting is that it actually has backend calls, auth, etc to give us a good idea of how a more substantial `reflex-dom` application can work. Right now, the example apps that are around are fairly simple and it is difficult to make the leap from examples to something like conduit.
 
 This workshop intends to jump you ahead to demonstrate how you way structure a bigger reflex app. You will be missing fundamentals that may make things tricky, but the aim is to give you just enough of a taste test for you to motivate you to learn the fundamentals and anchor it to frontend concepts that you already know. David Laing's [workshop](https://github.com/qfpl/reflex-workshop) is a very good resource for learning the fundamentals, and you will almost certainly need to go back and do it after this workshop if you haven't already.
 
@@ -12,9 +12,9 @@ The backend is already all prewritten so the workshop will just be implementing 
 
 There are a fair number of moving parts to reflex, so here is a quick map of the territory:
 
-- [GHCJs](https://github.com/ghcjs/ghcjs) is compiler that will compile GHC haskell into Javascript.
-- [Reflex](https://github.com/reflex-frp/reflex) is the base FRP library that gives us Events, Behaviours and Dynamics
-- [Reflex DOM](https://github.com/reflex-frp/reflex-dom) is a html frontend library written on top of reflex
+- [GHCJs](https://github.com/ghcjs/ghcjs) is the compiler that will compile GHC haskell into Javascript.
+- [Reflex](https://github.com/reflex-frp/reflex) is the base FRP library that gives us Events, Behaviours and Dynamics.
+- [Reflex DOM](https://github.com/reflex-frp/reflex-dom) is a HTML frontend library written on top of reflex.
 - [Reflex Platform](https://github.com/reflex-frp/reflex-platform) is a bunch of nix, java and objective C to be able to build web/iOS/Android apps with reflex DOM. This uses a webview on mobile, much like react native. But it runs most of the code in native compilation from GHC and very minimal JS: much how the jsaddle-warp test setup works.
 - [Obelisk](https://github.com/obsidiansystems/obelisk/) Is an opinionated framework that sits on top of platform, adding routing, server side rendering, static files, an out of the box ghcid based compile live recompilation and deployment.
 - Jsaddle is the thing that gets used when you `ob run`. Instead of compiling to JS, most of the code is run in the native haskell runtime and commands are streamed over a websocket to interact with Javascript.
@@ -37,6 +37,10 @@ You should have followed the instructions in the  [Setup Page](../SETUP.md). Thi
   - reflex-dom: [Internet Copy](https://github.com/reflex-frp/reflex-dom/blob/develop/Quickref.md) [LocalCopy](../docs/ReflexDomQuickref.md)
   - And consult hoogle to search for docs for functions that you see: http://localhost:8080. If you are not using the vm, just be careful about the absolute file links that don't work/
   - Use type holes by putting in an \_ for an expression that you don't know how to write. Them follow the types via hoogle and the quickrefs.
+
+## Where to get help?
+
+- You can ask questions about the workshop in #qfpl on Freenode.
 
 ## Overly ambitious Basic Workshop Outline
 
